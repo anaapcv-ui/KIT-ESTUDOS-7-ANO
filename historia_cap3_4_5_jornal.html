@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A GAZETA MEDIEVAL | História 7º Ano</title>
+<link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=IM+Fell+English:ital@0;1&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --papel: #f2ead8;
+  --papel2: #ede0c4;
+  --papel3: #e0d0a8;
+  --tinta: #1a1410;
+  --tinta2: #2e251c;
+  --tinta3: #4a3d2e;
+  --vermelho: #8b0000;
+  --vermelho2: #a31515;
+  --cinza: #6b6258;
+  --borda: #2e251c;
+  --linha: rgba(46,37,28,0.3);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: #1a1410;
+  font-family: 'IM Fell English', serif;
+  color: var(--tinta);
+}
+
+/* ── MASTHEAD ── */
+.masthead {
+  background: var(--papel);
+  border-bottom: 6px double var(--borda);
+  padding: 0 20px;
+  text-align: center;
+  position: relative;
+}
+.masthead-topo {
+  border-bottom: 1px solid var(--linha);
+  padding: 6px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'Lato', sans-serif;
+  font-size: 10px;
+  color: var(--tinta3);
+  letter-spacing: 0.5px;
+}
+.titulo-jornal {
+  font-family: 'UnifrakturMaguntia', cursive;
+  font-size: clamp(36px, 8vw, 72px);
+  color: var(--tinta);
+  line-height: 1;
+  padding: 12px 0 8px;
+  letter-spacing: 2px;
+}
+.subtitulo-jornal {
+  font-family: 'Playfair Display', serif;
+  font-size: 11px;
+  font-style: italic;
+  color: var(--tinta3);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  border-top: 1px solid var(--linha);
+  border-bottom: 1px solid var(--linha);
+  padding: 4px 0;
+  margin-bottom: 0;
+}
+.edicao-bar {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+  font-family: 'Lato', sans-serif;
+  font-size: 10px;
+  color: var(--tinta3);
+  border-top: 1px solid var(--linha);
+}
+
+/* ── NAV SEÇÕES ── */
+.nav {
+  background: var(--tinta);
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0;
+  border-bottom: 2px solid var(--vermelho);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.tab-btn {
+  background: transparent;
+  border: none;
+  border-right: 1px solid rgba(255,255,255,0.1);
+  color: #c8b89a;
+  font-family: 'Playfair Display', serif;
+  font-size: 11px;
+  font-style: italic;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  letter-spacing: 0.5px;
+}
+.tab-btn:hover { background: rgba(255,255,255,0.08); color: #f2ead8; }
+.tab-btn.active { background: var(--vermelho); color: #f2ead8; font-style: normal; font-weight: 700; }
+
+/* ── PÁGINA DO JORNAL ── */
+.pagina {
+  background: var(--papel);
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 24px 20px 32px;
+  min-height: 100vh;
+  background-image:
+    repeating-linear-gradient(0deg, transparent, transparent 27px, rgba(46,37,28,0.06) 28px);
+}
+
+.section { display: none; }
+.section.active { display: block; animation: virarPag 0.3s ease; }
+@keyframes virarPag { from{opacity:0;transform:translateX(-8px)} to{opacity:1;transform:translateX(0)} }
+
+/* ── MANCHETE ── */
+.manchete {
+  text-align: center;
+  border-bottom: 3px double var(--borda);
+  padding-bottom: 14px;
+  margin-bottom: 18px;
+}
+.manchete-kicker {
+  font-family: 'Lato', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--vermelho);
+  margin-bottom: 6px;
+}
+.manchete h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(22px, 4vw, 36px);
+  font-weight: 900;
+  line-height: 1.1;
+  color: var(--tinta);
+}
+.manchete-sub {
+  font-family: 'IM Fell English', serif;
+  font-size: 14px;
+  font-style: italic;
+  color: var(--tinta3);
+  margin-top: 6px;
+}
+.fio { height: 1px; background: var(--borda); margin: 10px 0; }
+.fio-duplo { height: 3px; border-top: 1px solid var(--borda); border-bottom: 1px solid var(--borda); margin: 10px 0; }
+
+/* ── COLUNAS ── */
+.colunas-2 {
+  display: grid;
+  grid-template-columns: 1fr 1px 1fr;
+  gap: 0 16px;
+  margin: 16px 0;
+}
+.col-div { background: var(--linha); width: 1px; }
+.colunas-3 {
+  display: grid;
+  grid-template-columns: 1fr 1px 1fr 1px 1fr;
+  gap: 0 12px;
+  margin: 16px 0;
+}
+
+/* ── ARTIGO ── */
+.artigo {}
+.artigo h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--tinta);
+  margin-bottom: 6px;
+  line-height: 1.2;
+}
+.artigo h4 {
+  font-family: 'Playfair Display', serif;
+  font-size: 13px;
+  font-weight: 700;
+  font-style: italic;
+  color: var(--vermelho);
+  margin-bottom: 5px;
+  border-bottom: 1px solid var(--linha);
+  padding-bottom: 3px;
+}
+.artigo p {
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--tinta2);
+  text-align: justify;
+  margin-bottom: 8px;
+}
+.artigo p:first-of-type::first-letter {
+  font-family: 'Playfair Display', serif;
+  font-size: 42px;
+  font-weight: 900;
+  float: left;
+  line-height: 0.8;
+  margin: 4px 6px 0 0;
+  color: var(--tinta);
+}
+.artigo ul {
+  font-size: 12.5px;
+  color: var(--tinta2);
+  padding-left: 14px;
+  line-height: 1.6;
+  margin-bottom: 8px;
+}
+
+/* ── NOTA DE RODAPÉ (dica) ── */
+.nota-dica {
+  background: #fffbf0;
+  border: 1px solid rgba(139,0,0,0.25);
+  border-left: 4px solid var(--vermelho);
+  padding: 10px 14px;
+  margin: 12px 0;
+  font-size: 12px;
+  font-family: 'Lato', sans-serif;
+}
+.nota-dica strong {
+  font-family: 'Playfair Display', serif;
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--vermelho);
+  display: block;
+  margin-bottom: 4px;
+}
+
+/* ── AVISO (pegadinha) ── */
+.aviso {
+  background: #fff5f5;
+  border: 1px solid rgba(139,0,0,0.3);
+  padding: 10px 14px;
+  margin: 12px 0;
+  font-size: 12px;
+  font-family: 'Lato', sans-serif;
+  position: relative;
+}
+.aviso strong {
+  font-family: 'Playfair Display', serif;
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--vermelho2);
+  display: block;
+  margin-bottom: 4px;
+}
+
+/* ── QUADRO ── */
+.quadro {
+  border: 1px solid var(--borda);
+  padding: 14px;
+  margin: 12px 0;
+  position: relative;
+}
+.quadro-titulo {
+  font-family: 'Playfair Display', serif;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+  color: var(--tinta);
+  border-bottom: 1px solid var(--linha);
+  padding-bottom: 6px;
+  margin-bottom: 10px;
+}
+.quadro-lista {
+  font-size: 12px;
+  color: var(--tinta2);
+  line-height: 1.6;
+  font-family: 'Lato', sans-serif;
+}
+.quadro-lista li { margin-bottom: 3px; padding-left: 4px; }
+
+/* ── TABELA JORNAL ── */
+.tabela-jornal {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  margin: 10px 0;
+}
+.tabela-jornal th {
+  background: var(--tinta);
+  color: var(--papel);
+  font-family: 'Playfair Display', serif;
+  font-size: 11px;
+  padding: 6px 10px;
+  text-align: left;
+  font-weight: 700;
+}
+.tabela-jornal td {
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--linha);
+  color: var(--tinta2);
+  font-family: 'Lato', sans-serif;
+  vertical-align: top;
+  font-size: 11.5px;
+}
+.tabela-jornal tr:nth-child(even) td { background: rgba(46,37,28,0.04); }
+
+/* ── PIRÂMIDE ── */
+.piramide { display:flex; flex-direction:column; align-items:center; gap:2px; margin:12px 0; }
+.p-cam {
+  display:flex; align-items:center; justify-content:center;
+  text-align:center; font-family:'Playfair Display',serif;
+  font-size:11.5px; font-weight:700; padding:9px 12px;
+  border: 1px solid var(--borda);
+}
+.p-1 { width:150px; background:var(--tinta); color:var(--papel); }
+.p-2 { width:280px; background:#4a3d2e; color:var(--papel2); }
+.p-3 { width:420px; background:#7a6a58; color:var(--papel); }
+.p-sub { font-size:9px; font-weight:400; font-family:'Lato',sans-serif; display:block; margin-top:2px; opacity:0.85; }
+
+/* ── MANCHETE ESPECIAL ── */
+.manchete-especial {
+  border: 3px double var(--borda);
+  padding: 14px 18px;
+  margin: 16px 0;
+  text-align: center;
+  background: rgba(139,0,0,0.04);
+}
+.manchete-especial h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px;
+  font-weight: 900;
+  color: var(--vermelho);
+  margin-bottom: 4px;
+}
+.manchete-especial p {
+  font-size: 13px;
+  font-style: italic;
+  color: var(--tinta2);
+  text-align: center !important;
+}
+.manchete-especial p::first-letter { font-size: 13px; float:none; }
+
+/* ── GLOSSÁRIO COLUNAS ── */
+.gloss-item {
+  border-bottom: 1px dotted var(--linha);
+  padding: 7px 0;
+  font-family: 'Lato', sans-serif;
+}
+.gloss-termo {
+  font-family: 'Playfair Display', serif;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--vermelho);
+}
+.gloss-def { font-size: 11.5px; color: var(--tinta2); margin-top: 2px; line-height: 1.4; }
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--tinta); }
+::-webkit-scrollbar-thumb { background: var(--cinza); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<!-- MASTHEAD -->
+<div class="masthead" style="background:var(--papel); padding: 0 24px;">
+  <div class="masthead-topo">
+    <span>HISTÓRIA · 7º ANO · CALLIS</span>
+    <span>✦ A VERDADE DO PASSADO, CONTADA COM CLAREZA ✦</span>
+    <span>PROVA: 28 DE ABRIL</span>
+  </div>
+  <div class="titulo-jornal">A Gazeta Medieval</div>
+  <div class="subtitulo-jornal">Capítulos III, IV, V &amp; VI · Feudalismo, Cruzadas, Comércio &amp; Crise</div>
+  <div class="edicao-bar">
+    <span>Vol. I — Nº 7 · Baixa Idade Média</span>
+    <span>Edição Especial de Revisão</span>
+    <span>Séc. IX ao XIV · Europa Ocidental</span>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav class="nav">
+  <button class="tab-btn active" onclick="showTab('feudo')">⚔ Feudalismo</button>
+  <button class="tab-btn" onclick="showTab('sociedade')">👑 Sociedade</button>
+  <button class="tab-btn" onclick="showTab('cultura')">🎨 Cultura</button>
+  <button class="tab-btn" onclick="showTab('cruzadas')">✝ Cruzadas</button>
+  <button class="tab-btn" onclick="showTab('comercio')">⚖ Comércio</button>
+  <button class="tab-btn" onclick="showTab('crise')">🐀 Crise Séc. XIV</button>
+  <button class="tab-btn" onclick="showTab('glossario')">📖 Glossário</button>
+</nav>
+
+<div class="pagina">
+
+<!-- ═══ FEUDALISMO ═══ -->
+<div id="feudo" class="section active">
+  <div class="manchete">
+    <div class="manchete-kicker">Capítulo III · Reportagem Especial</div>
+    <h2>NOBRE DISTRIBUI TERRAS EM TROCA<br>DE FIDELIDADE E SERVIÇO MILITAR</h2>
+    <div class="manchete-sub">O sistema feudal transforma a Europa: poder sai das cidades e vai para o campo</div>
+  </div>
+
+  <div class="colunas-2">
+    <div class="artigo">
+      <h4>O Feudo e Seus Domínios</h4>
+      <p>O feudo era uma porção de terra pertencente a um senhor nobre — autossuficiente, produzia quase tudo que precisava. Surgiu porque as invasões bárbaras espalharam o medo, e as pessoas buscaram proteção nos castelos dos nobres.</p>
+      <p>O feudo dividia-se em três partes: o <strong>manso senhorial</strong> (castelo, terras férteis, moinho, celeiro — tudo para o senhor), o <strong>manso servil</strong> (pequenos lotes cedidos aos camponeses mediante pagamento de tributos) e o <strong>manso comunal</strong> (área de uso coletivo — lenha, pastagem; caça era só para o senhor).</p>
+      <div class="nota-dica"><strong>📌 Dica de Prova</strong>Ruralização = pessoas saindo das cidades para os campos em busca de segurança. A economia passou a ser baseada na <strong>posse da terra</strong>.</div>
+    </div>
+    <div class="col-div"></div>
+    <div class="artigo">
+      <h4>Obrigações dos Servos</h4>
+      <p>Os camponeses pagavam caro pela proteção dos nobres. Suas principais obrigações eram:</p>
+      <ul>
+        <li><strong>Talha:</strong> parte da produção entregue ao senhor</li>
+        <li><strong>Corveia:</strong> trabalho gratuito nas terras do senhor</li>
+        <li><strong>Banalidades:</strong> pagamento pelo uso do moinho, forno e outros equipamentos do senhor</li>
+        <li><strong>Dízimo:</strong> 10% da produção destinada à Igreja</li>
+      </ul>
+      <div class="aviso"><strong>⚠ Atenção — Pegadinha Frequente</strong>Servo ≠ Escravo! O servo medieval não podia ser comprado ou vendido. Estava preso à terra, mas não era propriedade do senhor. Já o escravo romano era tratado como objeto.</div>
+    </div>
+  </div>
+
+  <div class="fio-duplo"></div>
+
+  <div class="manchete-especial">
+    <h3>VASSALAGEM: O JURAMENTO QUE MOVEU A EUROPA</h3>
+    <p>O rei distribuía terras aos nobres guerreiros em uma cerimônia solene chamada <strong>cerimônia de vassalagem</strong> (comitato). Quem recebia a terra tornava-se <strong>vassalo</strong>; quem doava era o <strong>suserano</strong>. Em troca da terra, o vassalo prometia fidelidade e serviço militar. O rei era o "suserano dos suseranos" — mas ao distribuir terras, seu poder <strong>se descentralizava</strong>.</p>
+  </div>
+
+  <div class="quadro">
+    <div class="quadro-titulo">Produção e Técnicas Agrícolas no Feudo</div>
+    <div class="colunas-2" style="margin:0">
+      <ul class="quadro-lista">
+        <li>Economia baseada na agricultura e trocas</li>
+        <li>Camponeses: dieta de legumes e pães (fracos)</li>
+        <li>Nobres: carnes e vinhos (fortes)</li>
+        <li>Rotação de culturas — solo pobre e subutilizado</li>
+      </ul>
+      <div class="col-div"></div>
+      <ul class="quadro-lista">
+        <li>A partir do séc. XI: charrua de ferro, uso do cavalo</li>
+        <li>Moinhos de vento e água para triturar grãos</li>
+        <li>Aumento da produção agrícola</li>
+        <li>Base para o Renascimento comercial posterior</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SOCIEDADE ═══ -->
+<div id="sociedade" class="section">
+  <div class="manchete">
+    <div class="manchete-kicker">Capítulo III · Ordem Social</div>
+    <h2>NASCE JÁ DETERMINADO O SEU LUGAR:<br>A SOCIEDADE ESTAMENTAL MEDIEVAL</h2>
+    <div class="manchete-sub">Três ordens dividem o mundo: os que oram, os que guerreiam e os que trabalham</div>
+  </div>
+
+  <div class="colunas-2">
+    <div class="artigo">
+      <h4>A Ordem que Não se Muda</h4>
+      <p>A sociedade feudal era <strong>estamental</strong>: o papel de cada indivíduo era definido pelo grupo em que nascia — chamado de <strong>estamento</strong> ou <strong>ordem</strong>. Não havia mobilidade social. Diferente da nossa "sociedade de classes", onde teoricamente se pode ascender.</p>
+      <p>A divisão principal era entre <strong>clérigos</strong> (integrantes da Igreja) e <strong>leigos</strong> (todos os demais). Os <strong>hereges</strong> — que não seguiam o catolicismo — podiam ser perseguidos pelo Tribunal da <strong>Inquisição</strong>.</p>
+    </div>
+    <div class="col-div"></div>
+    <div>
+      <div class="piramide">
+        <div class="p-cam p-1">👑 REI<span class="p-sub">Suserano dos suseranos. Poder enfraquecido.</span></div>
+        <div class="p-cam p-2">✝ CLERO + SENHORES / CAVALEIROS<span class="p-sub">Oratores (oram) · Bellatores (guerreiam)</span></div>
+        <div class="p-cam p-3">🌾 CAMPONESES — SERVOS E VILÕES<span class="p-sub">Laboratores (trabalham). Maioria da população.</span></div>
+      </div>
+      <div class="nota-dica"><strong>📌 Macete das 3 Ordens</strong>Oratores (clero) · Bellatores (nobreza/cavaleiros) · Laboratores (camponeses). Essa divisão era vista como "ordem de Deus".</div>
+    </div>
+  </div>
+
+  <div class="fio"></div>
+
+  <div class="colunas-3">
+    <div class="artigo">
+      <h4>O Clero</h4>
+      <ul>
+        <li><strong>Secular:</strong> papa, bispos, padres — vivem com o povo</li>
+        <li><strong>Regular:</strong> monges em mosteiros</li>
+        <li><strong>Alto clero:</strong> bispos, arcebispos, abades — detinham feudos e poder</li>
+        <li><strong>Baixo clero:</strong> paróquias menores</li>
+        <li>Mosteiros: centros de conhecimento e cópia de obras clássicas</li>
+      </ul>
+    </div>
+    <div class="col-div"></div>
+    <div class="artigo">
+      <h4>Os Cavaleiros</h4>
+      <ul>
+        <li>Nobres guerreiros que recebiam feudos</li>
+        <li>Construíam castelos como símbolo de poder militar</li>
+        <li>Valorizavam: lealdade, honestidade, proteção ao rei</li>
+        <li>Família numerosa = exército maior para defender o feudo</li>
+        <li>Cavalaria: formação militar mais importante da época</li>
+      </ul>
+    </div>
+    <div class="col-div"></div>
+    <div class="artigo">
+      <h4>Os Camponeses</h4>
+      <ul>
+        <li><strong>Servos:</strong> presos à terra, muitas obrigações</li>
+        <li><strong>Vilões:</strong> camponeses livres das vilas, trabalho temporário</li>
+        <li>Trabalho exaustivo, direitos políticos nenhum</li>
+        <li>Pagavam dízimo à Igreja (10%)</li>
+        <li>Representavam a esmagadora maioria da população</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ CULTURA ═══ -->
+<div id="cultura" class="section">
+  <div class="manchete">
+    <div class="manchete-kicker">Capítulo III · Artes e Letras</div>
+    <h2>A IDADE MÉDIA NÃO FOI "DAS TREVAS":<br>ARTE, FÉ E CULTURA FLORESCERAM</h2>
+    <div class="manchete-sub">Catedrais góticas, iluminuras e universidades provam a riqueza cultural do período</div>
+  </div>
+
+  <div class="colunas-2">
+    <div class="artigo">
+      <h4>Três Tipos de Cultura</h4>
+      <p>O historiador Hilário Franco Júnior propõe analisar a cultura medieval em três aspectos: a <strong>cultura eclesiástica</strong> — da Igreja, elitista e conservadora, ligada ao latim e ao controle do conhecimento; a <strong>cultura popular</strong> — do povo, com festas pagãs, Carnaval, mitos, bruxas, dragões e contos de fadas (com finais trágicos!); e a <strong>cultura intermediária</strong> — mistura das duas, como a história de São Jorge e o dragão.</p>
+      <div class="nota-dica"><strong>📌 Teocentrismo</strong>Cultura medieval girava em torno de Deus. Igreja controlava o conhecimento, a arte e a política. Por isso: teocêntrica (Deus no centro de tudo).</div>
+    </div>
+    <div class="col-div"></div>
+    <div class="artigo">
+      <h4>Arquitetura: Dois Estilos</h4>
+      <ul>
+        <li><strong>Românico:</strong> paredes grossas, janelas estreitas, arcos, aspecto de fortaleza. Mais horizontal. Época em que a vida rural era valorizada.</li>
+        <li><strong>Gótico:</strong> janelas com vitrais coloridos, torres altas, estrutura vertical. Transmite espiritualidade e a sensação de "tocar o céu". Ex: Notre-Dame de Paris.</li>
+      </ul>
+      <h4 style="margin-top:10px">Literatura, Música e Imagens</h4>
+      <ul>
+        <li><strong>Iluminuras:</strong> desenhos à mão em livros medievais, com ouro e prata</li>
+        <li><strong>Trovadores:</strong> músicos que expunham o cotidiano</li>
+        <li><strong>Literatura:</strong> Rei Arthur e Lancelot, cavalaria</li>
+        <li><strong>Imagens:</strong> ensinavam a fé para quem não sabia ler</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="quadro">
+    <div class="quadro-titulo">Principais Universidades Medievais</div>
+    <table class="tabela-jornal">
+      <tr><th>Universidade</th><th>País</th><th>Observação</th></tr>
+      <tr><td>Bolonha</td><td>Itália</td><td>A mais antiga da Europa</td></tr>
+      <tr><td>Oxford e Cambridge</td><td>Inglaterra</td><td>Entre as principais instituições medievais</td></tr>
+      <tr><td>Paris</td><td>França</td><td>Grande centro do pensamento medieval</td></tr>
+      <tr><td>Salamanca</td><td>Espanha</td><td>Importante centro ibérico</td></tr>
+      <tr><td>Coimbra</td><td>Portugal</td><td>A mais antiga de Portugal</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- ═══ CRUZADAS ═══ -->
+<div id="cruzadas" class="section">
+  <div class="manchete">
+    <div class="manchete-kicker">Capítulo IV · Guerra Santa</div>
+    <h2>PAPA CONVOCA EUROPA PARA GUERRA:<br>"DEUS O QUER!" — JERUSALÉM EM DISPUTA</h2>
+    <div class="manchete-sub">Expedições militares entre os séculos XI e XIII marcam a passagem para a Era Moderna</div>
+  </div>
+
+  <div class="colunas-2">
+    <div class="artigo">
+      <h4>Por que Jerusalém é Sagrada?</h4>
+      <p>Jerusalém é sagrada para <strong>três religiões monoteístas</strong>: o <strong>judaísmo</strong> (capital do reino judaico, Arca da Aliança e Templo de Salomão), o <strong>cristianismo</strong> (local da crucificação, morte e ressurreição de Jesus — Santo Sepulcro) e o <strong>islamismo</strong> (de onde o profeta Maomé ascendeu aos céus).</p>
+      <p>Em 1076, os <strong>turcos seljúcidas</strong> tomaram Jerusalém e proibiram as peregrinações cristãs. O papa <strong>Urbano II</strong> respondeu convocando a guerra no <strong>Concílio de Clermont</strong> (1095), prometendo perdão dos pecados a todos que lutassem.</p>
+    </div>
+    <div class="col-div"></div>
+    <div class="artigo">
+      <h4>Por que tantos aderiram?</h4>
+      <p><strong>Motivações religiosas:</strong> crença nas indulgências (perdão dos pecados), reconquistar lugares sagrados, fortalecer o papa.</p>
+      <p><strong>Motivações econômicas:</strong> nobres sem herança (só o primogênito herdava), excesso de mão de obra nos campos, comerciantes italianos (Gênova, Veneza) queriam abrir rotas para o Oriente. Os muçulmanos bloqueavam o Mediterrâneo — as Cruzadas serviriam para reabri-lo.</p>
+      <div class="aviso"><strong>⚠ Pegadinha Frequente</strong>As Cruzadas NÃO tinham objetivo apenas religioso! Havia fortes motivações econômicas. E não foram comandadas por camponeses — eram expedições da nobreza incentivadas pelo Papa.</div>
+    </div>
+  </div>
+
+  <div class="fio-duplo"></div>
+
+  <div class="colunas-2" style="margin-top:14px">
+    <div class="artigo">
+      <h4>Os Templários e o Sistema Bancário</h4>
+      <p>Para proteger os peregrinos foi criada a <strong>Ordem dos Cavaleiros Templários</strong>. Com o tempo, acumularam poder político e financeiro — guardavam tesouros e faziam empréstimos a juros. Por isso são considerados os <strong>originários do sistema bancário</strong>.</p>
+      <p>O rei <strong>Filipe IV</strong> da França, que devia muito aos Templários, passou a conspirar contra eles, acusando-os de heresia para não pagar as dívidas.</p>
+    </div>
+    <div class="col-div"></div>
+    <div>
+      <div class="quadro">
+        <div class="quadro-titulo">Efeitos das Cruzadas</div>
+        <ul class="quadro-lista">
+          <li>✓ Reabertura do Mar Mediterrâneo ao comércio</li>
+          <li>✓ Trocas culturais Oriente ↔ Ocidente</li>
+          <li>✓ Europeus aprenderam: Medicina, Astronomia, Matemática, Navegação com os árabes</li>
+          <li>✓ Acelerou o Renascimento comercial</li>
+          <li>✗ Muitas mortes — fome, doenças, batalhas</li>
+          <li>✗ Senhores feudais enfraquecidos (perderam servos)</li>
+          <li>✗ Declínio acelerado do feudalismo</li>
+        </ul>
+      </div>
+      <div class="nota-dica"><strong>📌 3ª Cruzada — "Dos Reis"</strong>Participaram os três principais reis europeus. Cristãos retomaram acesso aos lugares sagrados, mas Jerusalém não ficou permanentemente cristã.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ COMÉRCIO ═══ -->
+<div id="comercio" class="section">
+  <div class="manchete">
+    <div class="manchete-kicker">Capítulo V · Economia</div>
+    <h2>CIDADES RENASCEM, FEIRAS FLORESCEM:<br>O COMÉRCIO EUROPEU RESSURGE</h2>
+    <div class="manchete-sub">Renascimento comercial e urbano transforma a Baixa Idade Média e cria a burguesia</div>
+  </div>
+
+  <div class="colunas-2">
+    <div class="artigo">
+      <h4>Por que o Comércio Voltou?</h4>
+      <p>Com o fim das invasões bárbaras e melhoria das técnicas agrícolas — arado de tração animal, <strong>plantio em rotação trienal</strong>, moinhos — a produção de alimentos aumentou. A população quase dobrou entre 1000 e 1300.</p>
+      <p>Com mais gente do que empregos no campo, camponeses migraram para as cidades tornando-se <strong>artesãos e mercadores</strong>. Além disso, as Cruzadas reabriram o Mediterrâneo às rotas comerciais com o Oriente.</p>
+      <div class="nota-dica"><strong>📌 Renascimento Comercial</strong>Nome dado ao retorno do comércio ativo na Baixa Idade Média. Teve como consequências: surgimento da burguesia, crescimento das cidades e declínio do feudalismo.</div>
+    </div>
+    <div class="col-div"></div>
+    <div class="artigo">
+      <h4>Burgos e a Nova Burguesia</h4>
+      <p>Os novos centros urbanos chamavam-se <strong>burgos</strong> — dedicados ao comércio, artesanato, manufatura e bancos. Seus moradores eram chamados de <strong>burgueses</strong>.</p>
+      <p>Os banqueiros enriqueciam com empréstimos a juros — a chamada <strong>usura</strong>, que a Igreja condenava. Aos poucos as cidades foram se emancipando dos nobres. A <strong>burguesia</strong> era uma nova classe social, diferente do que o termo significa hoje.</p>
+      <div class="aviso"><strong>⚠ Atenção</strong>"Burguês" medieval ≠ burguês atual! Na Idade Média, burguês era simplesmente quem morava nos burgos e vivia do comércio.</div>
+    </div>
+  </div>
+
+  <div class="fio"></div>
+
+  <table class="tabela-jornal" style="margin-top:14px">
+    <tr><th>Organização</th><th>O que era</th><th>Exemplo famoso</th></tr>
+    <tr><td><strong>Feiras medievais</strong></td><td>Mercados temporários, 1-2x/ano, duravam dias. Reuniam comerciantes de todo o mundo.</td><td>Feiras de Champagne (França)</td></tr>
+    <tr><td><strong>Cambistas</strong></td><td>Trocadores de moedas — essenciais pois cada região tinha sua moeda.</td><td>Origem dos bancos</td></tr>
+    <tr><td><strong>Corporações de ofício</strong></td><td>Uniram artesãos do mesmo ofício. Regulavam preços, qualidade e formavam aprendizes (12-16 anos).</td><td>Carpinteiros, sapateiros, etc.</td></tr>
+    <tr><td><strong>Ligas comerciais</strong></td><td>Organizações maiores, entre cidades. Organizavam produção e distribuição.</td><td>Liga Hanseática (cidades alemãs, de Londres a Novgorod)</td></tr>
+  </table>
+</div>
+
+<!-- ═══ CRISE ═══ -->
+<div id="crise" class="section">
+  <div class="manchete">
+    <div class="manchete-kicker">Capítulo VI · Catástrofe — Página 98</div>
+    <h2>UM TERÇO DA EUROPA MORREU:<br>A PESTE NEGRA ASSOLA O CONTINENTE</h2>
+    <div class="manchete-sub">Fome, crise e epidemia provocam a maior crise demográfica da história medieval europeia</div>
+  </div>
+
+  <div class="colunas-2">
+    <div class="artigo">
+      <h4>Como a Crise Começou</h4>
+      <p>Entre os séculos XI e XIII, crescimento e prosperidade. Mas o século XIV trouxe colapso: o <strong>desmatamento excessivo</strong> para ampliar plantações deixou solos empobrecidos. <strong>Mudanças climáticas</strong> alteraram o regime de chuvas. A produção caiu, gerando <strong>fome generalizada</strong>.</p>
+      <p>A população enfraquecida pela desnutrição ficou vulnerável a doenças. Era o cenário perfeito para a maior catástrofe da Idade Média.</p>
+    </div>
+    <div class="col-div"></div>
+    <div class="artigo">
+      <h4>Crise Demográfica</h4>
+      <p><strong>Crise demográfica</strong> é a grande diminuição da população, ocasionada geralmente por epidemias, guerras e catástrofes naturais. Os efeitos dessa epidemia no período foram avassaladores, reduzindo significativamente a população europeia.</p>
+      <p>As rotas comerciais do Mediterrâneo — que tinham sido abertas pelas Cruzadas — agora serviam como estradas para a doença. A interligação das cidades, que antes era vantagem, tornou-se tragédia.</p>
+    </div>
+  </div>
+
+  <div class="manchete-especial">
+    <h3>🐀 RELATÓRIO ESPECIAL: A PESTE NEGRA</h3>
+    <p><em>Bactéria Yersinia pestis · Transmitida por pulgas de ratos · Chegou à Europa por navios comerciais do Oriente (1346–1348)</em></p>
+  </div>
+
+  <div class="colunas-2" style="margin-top:4px">
+    <div class="artigo">
+      <h4>Causa e Transmissão</h4>
+      <ul>
+        <li>Causada pela bactéria <strong>Yersinia pestis</strong></li>
+        <li>Ratos eram os hospedeiros — pulgas picavam os ratos e depois os humanos</li>
+        <li>Chegou à Europa c. 1346–1348 por navios do Oriente</li>
+        <li>Seguiu as <strong>rotas comerciais do Mediterrâneo</strong></li>
+        <li>Cidades interligadas pelo comércio facilitaram o alastramento</li>
+      </ul>
+      <h4 style="margin-top:10px">Por que se espalhou tanto?</h4>
+      <ul>
+        <li>Falta de higiene e saneamento básico</li>
+        <li>Acúmulo de lixo e cadáveres nas cidades</li>
+        <li>Ratos proliferavam facilmente</li>
+        <li>Nenhum conhecimento médico para tratar</li>
+        <li>População já enfraquecida pela fome</li>
+      </ul>
+    </div>
+    <div class="col-div"></div>
+    <div class="artigo">
+      <h4>Sintomas e Consequências</h4>
+      <ul>
+        <li>Febre alta, surgimento de <strong>ínguas</strong> no pescoço e axilas</li>
+        <li>Vertigem, vômitos, dor de cabeça</li>
+        <li>Morte rápida em muitos casos</li>
+      </ul>
+      <h4 style="margin-top:10px">Impacto na Europa</h4>
+      <ul>
+        <li><strong>1/3 da população europeia morreu</strong></li>
+        <li>Cidades abandonadas, famílias destruídas</li>
+        <li>Crise econômica e social gravíssima</li>
+        <li>Pessoas fugiam das cidades, espalhando ainda mais a doença</li>
+      </ul>
+      <div class="nota-dica"><strong>📌 Macete</strong>Ásia → navios → ratos → pulgas → humanos → Yersinia pestis → ínguas, febre, morte. Falta de higiene = principal fator de espalhamento.</div>
+      <div class="aviso"><strong>⚠ Pegadinha</strong>A Peste Negra era causada por uma <strong>bactéria</strong>, não por castigo divino! Na época as pessoas não sabiam disso — mas na prova, a causa é científica.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ GLOSSÁRIO ═══ -->
+<div id="glossario" class="section">
+  <div class="manchete">
+    <div class="manchete-kicker">Edição de Referência</div>
+    <h2>DICIONÁRIO DO MUNDO MEDIEVAL</h2>
+    <div class="manchete-sub">Todos os termos que podem cair na prova, explicados com clareza</div>
+  </div>
+  <div class="colunas-2" style="margin-top:8px">
+    <div>
+      <div class="gloss-item"><div class="gloss-termo">Feudalismo</div><div class="gloss-def">Sistema político, econômico e social baseado na posse da terra e nas relações de suserania e vassalagem. Poder descentralizado.</div></div>
+      <div class="gloss-item"><div class="gloss-termo">Feudo</div><div class="gloss-def">Porção de terra autossuficiente pertencente a um senhor nobre, onde viviam camponeses e servos.</div></div>
+      <div class="gloss-item"><div class="gloss-termo">Vassalo / Suserano</div><div class="gloss-def">Vassalo recebe a terra e jura fidelidade. Suserano concede a terra. O rei era o "suserano dos suseranos".</div></div>
+      <div class="gloss-item"><div class="gloss-termo">Talha / Corveia / Banalidades</div><div class="gloss-def">Tributos dos servos: parte da produção ao senhor (talha), trabalho gratuito (corveia), pagamento pelo uso de equipamentos (banalidades).</div></div>
+      <div class="gloss-item"><div class="gloss-termo">Estamento</div><div class="gloss-def">Grupo social fixo da sociedade medieval — clero, nobreza, camponeses. Determinado pelo nascimento, sem mobilidade.</div></div>
+      <div class="gloss-item"><div class="gloss-termo">Herege / Inquisição</div><div class="gloss-def">Herege: quem contraria o dogma da Igreja. Inquisição: tribunal religioso criado para julgá-los e puni-los.</div></div>
+      <div class="gloss-item"><div class="gloss-termo">Teocentrismo</div><div class="gloss-def">Visão de mundo centrada em Deus. Característica da cultura medieval, dominada pela Igreja Católica.</div></div>
+      <div class="gloss-item"><div class="gloss-termo">Românico / Gótico</div><div class="gloss-def">Estilos arquitetônicos medievais. Românico: pesado, horizontal. Gótico: vertical, vitrais, torres altas.</div></div>
+      <div class="gloss-item"><div class="gloss-termo">Iluminuras</div><div class="gloss-def">Desenhos feitos à mão em livros medievais pelos monges copistas, decorados com folhas de ouro ou prata.</div></div>
+      <div class="gloss-item"><div class="gloss-termo">Cruzadas</div><div class="gloss-def">Expedições militares cristãs (sécs. XI–XIII) para reconquistar Jerusalém dos muçulmanos turcos seljúcidas.</div></div>
+      <div class="gloss-item"><div class="gloss-termo">Indulgência</div><div class="gloss-def">Perdão dos pecados prometido pelo Papa aos cruzados que participassem das expedições militares.</div></div>
+    </div>
+    <div class="col-div"></div>
+    <div>
+      <div class="gloss-item"><div class="gloss-termo">Templários</div><div class="gloss-def">Ordem religiosa militar criada para proteger peregrinos. Tornaram-se banqueiros poderosos — considerados origem do sistema bancário.</div></div>
+      <div class="gloss-item"><div class="gloss-termo">Renascimento comercial</div><div class="gloss-def">Retomada do comércio na Baixa Idade Média, impulsionada pelo crescimento populacional e reabertura do Mediterrâneo.</div></div>
+      <div class="gloss-item"><div class="gloss-termo">Burgo / Burguesia</div><div class="gloss-def">Burgo: novo centro urbano medieval. Burguesia: nova classe social ligada ao comércio e artesanato nos burgos.</div></div>
+      <div class="gloss-item"><div class="gloss-termo">Usura</div><div class="gloss-def">Empréstimo de dinheiro com cobrança de juros. Condenada pela Igreja, mas praticada pelos banqueiros dos burgos.</div></div>
+      <div class="gloss-item"><div class="gloss-termo">Corporação de ofício</div><div class="gloss-def">Organização que reunia artesãos do mesmo ofício (carpinteiros, sapateiros...) para regular preços e qualidade.</div></div>
+      <div class="gloss-item"><div class="gloss-termo">Liga Hanseática</div><div class="gloss-def">Liga de cidades mercantis alemãs que controlava o comércio no norte europeu, de Londres a Novgorod.</div></div>
+      <div class="gloss-item"><div class="gloss-termo">Entreposto comercial</div><div class="gloss-def">Local estratégico nas rotas de comércio. Gênova e Veneza eram os principais entrepostos do Mediterrâneo.</div></div>
+      <div class="gloss-item"><div class="gloss-termo">Crise demográfica</div><div class="gloss-def">Grande diminuição da população causada por epidemias, guerras ou catástrofes naturais.</div></div>
+      <div class="gloss-item"><div class="gloss-termo">Peste Negra (bubônica)</div><div class="gloss-def">Epidemia causada pela bactéria Yersinia pestis, transmitida por pulgas de ratos. Matou 1/3 da população europeia no séc. XIV.</div></div>
+      <div class="gloss-item"><div class="gloss-termo">Ruralização</div><div class="gloss-def">Migração das pessoas das cidades para os campos, em busca de segurança nos feudos — base da economia feudal.</div></div>
+      <div class="gloss-item"><div class="gloss-termo">Rotação trienal</div><div class="gloss-def">Técnica agrícola medieval: alternância de culturas em três partes da terra, com um período de descanso do solo.</div></div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /pagina -->
+
+<script>
+function showTab(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📝 Quiz Interativo — Idade Média</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f8f5ef;
+  --card: #ffffff;
+  --borda: #e0d8c8;
+  --texto: #2c2418;
+  --texto2: #5a4e3c;
+  --verde: #1a7a3a;
+  --verde-bg: #e8f5ec;
+  --vermelho: #b91c1c;
+  --vermelho-bg: #fef2f2;
+  --dourado: #8b6914;
+  --dourado-bg: #fdf6e3;
+  --azul: #1a4a7a;
+  --azul-bg: #eff6ff;
+  --cinza: #6b7280;
+  --cinza-bg: #f3f4f6;
+  --sombra: 0 2px 12px rgba(44,36,24,0.08);
+  --raio: 12px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); font-family: 'Source Sans 3', sans-serif; color: var(--texto); min-height: 100vh; }
+
+/* ── HEADER ── */
+.header {
+  background: linear-gradient(135deg, #1a1410 0%, #2c2418 100%);
+  color: #f8f5ef;
+  padding: 24px 20px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.header::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0; height: 4px;
+  background: linear-gradient(90deg, var(--dourado), #c4961a, var(--dourado));
+}
+.header h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(22px, 5vw, 32px);
+  font-weight: 900;
+  margin-bottom: 4px;
+}
+.header p { font-size: 13px; opacity: 0.7; }
+
+/* ── PROGRESS BAR ── */
+.progress-container {
+  background: var(--card);
+  border-bottom: 1px solid var(--borda);
+  padding: 14px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: var(--sombra);
+}
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--texto2);
+}
+.progress-bar {
+  height: 8px;
+  background: var(--cinza-bg);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--dourado), #c4961a);
+  border-radius: 4px;
+  transition: width 0.4s ease;
+  width: 0%;
+}
+
+/* ── CONTENT ── */
+.content { max-width: 700px; margin: 0 auto; padding: 20px 16px 100px; }
+
+/* ── QUESTION CARD ── */
+.q-card {
+  background: var(--card);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+  padding: 20px;
+  margin-bottom: 14px;
+  box-shadow: var(--sombra);
+  transition: border-color 0.3s;
+  position: relative;
+}
+.q-card.respondida { border-color: var(--verde); }
+.q-card.faltando { border-color: var(--vermelho); animation: shake 0.4s ease; }
+@keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-4px)} 75%{transform:translateX(4px)} }
+
+.q-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--cinza-bg);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--texto2);
+  margin-bottom: 10px;
+  transition: background 0.3s, color 0.3s;
+}
+.q-card.respondida .q-num { background: var(--verde); color: white; }
+
+.q-texto {
+  font-size: 14.5px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--texto);
+  margin-bottom: 14px;
+}
+
+/* ── OPTIONS ── */
+.opcoes { display: flex; flex-direction: column; gap: 8px; }
+.opcao {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 2px solid var(--borda);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: var(--texto2);
+  user-select: none;
+  -webkit-user-select: none;
+}
+.opcao:hover { border-color: var(--dourado); background: var(--dourado-bg); }
+.opcao.selecionada {
+  border-color: var(--azul);
+  background: var(--azul-bg);
+  color: var(--texto);
+  font-weight: 600;
+}
+.opcao-letra {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 700;
+  background: var(--cinza-bg);
+  color: var(--texto2);
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+.opcao.selecionada .opcao-letra {
+  background: var(--azul);
+  color: white;
+}
+
+/* ── BLOCKED (depois de enviar) ── */
+.q-card.bloqueada .opcao { cursor: default; pointer-events: none; }
+.q-card.bloqueada .opcao.selecionada.correta {
+  border-color: var(--verde);
+  background: var(--verde-bg);
+}
+.q-card.bloqueada .opcao.selecionada.correta .opcao-letra {
+  background: var(--verde);
+  color: white;
+}
+.q-card.bloqueada .opcao.selecionada.errada {
+  border-color: var(--vermelho);
+  background: var(--vermelho-bg);
+}
+.q-card.bloqueada .opcao.selecionada.errada .opcao-letra {
+  background: var(--vermelho);
+  color: white;
+}
+.q-card.bloqueada .opcao.resposta-certa:not(.selecionada) {
+  border-color: var(--verde);
+  background: var(--verde-bg);
+}
+.q-card.bloqueada .opcao.resposta-certa:not(.selecionada) .opcao-letra {
+  background: var(--verde);
+  color: white;
+}
+
+/* ── FEEDBACK ── */
+.feedback {
+  display: none;
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  font-size: 12.5px;
+  line-height: 1.55;
+}
+.feedback.acertou { background: var(--verde-bg); border-left: 4px solid var(--verde); }
+.feedback.errou { background: var(--vermelho-bg); border-left: 4px solid var(--vermelho); }
+.feedback-titulo {
+  font-weight: 700;
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+.feedback.acertou .feedback-titulo { color: var(--verde); }
+.feedback.errou .feedback-titulo { color: var(--vermelho); }
+.feedback-erradas {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(0,0,0,0.08);
+  color: var(--cinza);
+  font-size: 12px;
+}
+.feedback-erradas p { margin-bottom: 3px; }
+
+/* ── BOTTOM BAR ── */
+.bottom-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--card);
+  border-top: 1px solid var(--borda);
+  padding: 14px 20px;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  align-items: center;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.06);
+  z-index: 100;
+}
+
+.btn-enviar {
+  padding: 12px 32px;
+  border: none;
+  border-radius: 8px;
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-enviar.desabilitado {
+  background: var(--cinza-bg);
+  color: var(--cinza);
+  cursor: not-allowed;
+}
+.btn-enviar.ativo {
+  background: var(--verde);
+  color: white;
+  box-shadow: 0 4px 12px rgba(26,122,58,0.3);
+}
+.btn-enviar.ativo:hover { background: #15652f; transform: translateY(-1px); }
+
+.aviso-faltam {
+  font-size: 12px;
+  color: var(--vermelho);
+  font-weight: 600;
+  display: none;
+}
+
+/* ── RESULTADO ── */
+.resultado-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(26,20,16,0.85);
+  z-index: 200;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+.resultado-overlay.visivel { display: flex; }
+.resultado-card {
+  background: var(--card);
+  border-radius: 16px;
+  padding: 32px 28px;
+  max-width: 420px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  animation: pop 0.3s ease;
+}
+@keyframes pop { from{transform:scale(0.9);opacity:0} to{transform:scale(1);opacity:1} }
+
+.resultado-emoji { font-size: 56px; margin-bottom: 12px; }
+.resultado-titulo {
+  font-family: 'Playfair Display', serif;
+  font-size: 24px;
+  font-weight: 900;
+  margin-bottom: 6px;
+}
+.resultado-nota {
+  font-size: 48px;
+  font-weight: 900;
+  color: var(--verde);
+  margin: 12px 0;
+}
+.resultado-msg { font-size: 14px; color: var(--texto2); margin-bottom: 16px; line-height: 1.5; }
+
+.codigo-box {
+  background: var(--dourado-bg);
+  border: 2px dashed var(--dourado);
+  border-radius: 8px;
+  padding: 14px;
+  margin: 16px 0;
+}
+.codigo-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--dourado);
+  margin-bottom: 6px;
+}
+.codigo-valor {
+  font-family: monospace;
+  font-size: 28px;
+  font-weight: 900;
+  color: var(--texto);
+  letter-spacing: 3px;
+}
+.codigo-instrucao {
+  font-size: 11px;
+  color: var(--texto2);
+  margin-top: 6px;
+}
+
+.btn-ver-correcao {
+  margin-top: 16px;
+  padding: 12px 28px;
+  background: var(--azul);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-ver-correcao:hover { background: #133d66; }
+
+.btn-fechar-resultado {
+  margin-top: 10px;
+  padding: 8px 20px;
+  background: transparent;
+  border: 1px solid var(--borda);
+  border-radius: 8px;
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 13px;
+  color: var(--texto2);
+  cursor: pointer;
+}
+
+/* ── BARRA DE RESULTADO FIXA (após enviar) ── */
+.resultado-barra {
+  display: none;
+  background: linear-gradient(135deg, #1a1410, #2c2418);
+  color: #f8f5ef;
+  padding: 12px 20px;
+  text-align: center;
+  position: sticky;
+  top: 0;
+  z-index: 150;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+.resultado-barra.visivel { display: block; }
+.resultado-barra-inner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  max-width: 700px;
+  margin: 0 auto;
+}
+.rb-nota { font-family: 'Playfair Display',serif; font-size: 20px; font-weight: 900; }
+.rb-codigo {
+  background: rgba(196,150,26,0.2);
+  border: 1px solid rgba(196,150,26,0.5);
+  padding: 4px 14px;
+  border-radius: 6px;
+  font-family: monospace;
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  color: #c4961a;
+}
+.rb-status {
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-weight: 700;
+}
+.rb-status.bloqueado { background: rgba(185,28,28,0.2); color: #fca5a5; }
+.rb-status.liberado { background: rgba(26,122,58,0.2); color: #86efac; }
+
+/* ── TRAVA PÓS-ENVIO ── */
+.trava-msg {
+  display: none;
+  text-align: center;
+  padding: 20px;
+  font-size: 14px;
+  color: var(--texto2);
+  background: var(--cinza-bg);
+  border-radius: var(--raio);
+  margin-bottom: 14px;
+}
+.trava-msg.visivel { display: block; }
+
+/* ── RESPONSIVO ── */
+@media (max-width: 480px) {
+  .q-card { padding: 16px; }
+  .opcao { padding: 10px 12px; font-size: 13px; }
+  .resultado-nota { font-size: 40px; }
+  .codigo-valor { font-size: 22px; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>📝 Quiz — Idade Média</h1>
+  <p>Cap. 3, 4, 5 e pág. 98 do Cap. 6 • História 7º ano • 15 questões</p>
+</div>
+
+<div class="resultado-barra" id="resultadoBarra">
+  <div class="resultado-barra-inner">
+    <span class="rb-nota" id="rbNota">📝 0/15</span>
+    <span>🔑</span>
+    <span class="rb-codigo" id="rbCodigo">---</span>
+    <span class="rb-status bloqueado" id="rbStatus">🔒 Gabarito bloqueado</span>
+  </div>
+</div>
+
+<div class="progress-container">
+  <div class="progress-info">
+    <span id="progTexto">0 de 15 respondidas</span>
+    <span id="progPct">0%</span>
+  </div>
+  <div class="progress-bar">
+    <div class="progress-fill" id="progFill"></div>
+  </div>
+</div>
+
+<div class="content" id="quizArea">
+  <!-- Questions will be injected here by JS -->
+</div>
+
+<div class="bottom-bar" id="bottomBar">
+  <span class="aviso-faltam" id="avisoFaltam"></span>
+  <button class="btn-enviar desabilitado" id="btnEnviar" onclick="tentarEnviar()">
+    Enviar Respostas
+  </button>
+</div>
+
+<div class="resultado-overlay" id="resultadoOverlay">
+  <div class="resultado-card">
+    <div class="resultado-emoji" id="resEmoji">🎯</div>
+    <div class="resultado-titulo" id="resTitulo">Resultado</div>
+    <div class="resultado-nota" id="resNota">0/15</div>
+    <div class="resultado-msg" id="resMsg"></div>
+    <div class="codigo-box">
+      <div class="codigo-label">🔑 Código de Liberação</div>
+      <div class="codigo-valor" id="resCodigo">---</div>
+      <div class="codigo-instrucao">Mostre este código para liberar o gabarito comentado</div>
+    </div>
+    <button class="btn-ver-correcao" id="btnVerCorrecao" style="display:none" onclick="mostrarCorrecao()">
+      Ver Correção Comentada
+    </button>
+    <br>
+    <button class="btn-fechar-resultado" onclick="fecharResultado()">Fechar</button>
+  </div>
+</div>
+
+<script>
+const QUIZ = [
+  {
+    q: "A sociedade feudal era organizada em estamentos. Isso significa que:",
+    opts: ["Qualquer pessoa podia ascender socialmente pelo trabalho",
+           "O lugar social de cada indivíduo era definido pelo nascimento, sem mobilidade",
+           "Havia apenas duas classes: ricos e pobres",
+           "Os camponeses escolhiam em qual estamento queriam viver"],
+    correta: 1,
+    explicacao: "A sociedade era estamental: o papel de cada pessoa era definido pelo nascimento. Não existia mobilidade social — diferente da nossa sociedade de classes atual.",
+    erradas: {0:"Não havia mobilidade social na sociedade estamental — ninguém ascendia pelo trabalho.", 2:"Existiam três ordens (clero, nobreza, camponeses), não apenas duas classes.", 3:"Os camponeses não tinham escolha — nasciam camponeses e morriam camponeses."}
+  },
+  {
+    q: "Na cerimônia de vassalagem, o nobre jurava fidelidade ao rei em troca de:",
+    opts: ["Dinheiro e salário mensal",
+           "Um cargo público na corte",
+           "Terras (feudo) e autonomia para administrá-las",
+           "Liberdade religiosa e isenção de impostos"],
+    correta: 2,
+    explicacao: "Na cerimônia de vassalagem (comitato), o nobre jurava fidelidade ao rei e, em troca, recebia terras (feudo) com autonomia para administrá-las.",
+    erradas: {0:"Não existia sistema de salários na relação suserano-vassalo — a recompensa era terra.", 1:"Não havia cargos públicos como entendemos hoje; o vassalo recebia terras.", 3:"A troca era terra por serviço militar e fidelidade, não liberdade religiosa."}
+  },
+  {
+    q: "Os servos medievais se diferenciavam dos escravos romanos porque:",
+    opts: ["Não eram obrigados a trabalhar",
+           "Podiam comprar sua liberdade facilmente",
+           "Não podiam ser comprados ou vendidos como objetos",
+           "Recebiam salário e benefícios do senhor feudal"],
+    correta: 2,
+    explicacao: "Os servos estavam presos à terra e tinham muitas obrigações, mas NÃO eram propriedade do senhor — não podiam ser comprados ou vendidos.",
+    erradas: {0:"Os servos ERAM obrigados a trabalhar — pagavam talha, corveia e banalidades.", 1:"Não era fácil comprar liberdade — os servos raramente tinham recursos para isso.", 3:"Os servos não recebiam salário — eram obrigados a trabalhar em troca de proteção."}
+  },
+  {
+    q: "A talha, a corveia e as banalidades eram:",
+    opts: ["Festas populares da Idade Média",
+           "Obrigações e tributos dos servos para com o senhor feudal",
+           "Tipos de castigos aplicados pela Inquisição",
+           "Nomes dos estilos arquitetônicos medievais"],
+    correta: 1,
+    explicacao: "Talha = parte da produção ao senhor. Corveia = trabalho gratuito nas terras do senhor. Banalidades = pagamento pelo uso de moinhos, fornos, etc.",
+    erradas: {0:"Não eram festas — eram obrigações pesadas impostas aos servos.", 2:"Não eram castigos da Inquisição — eram tributos feudais do dia a dia.", 3:"Nada têm a ver com arquitetura — os estilos são Românico e Gótico."}
+  },
+  {
+    q: "O teocentrismo, característica da cultura medieval, significava que:",
+    opts: ["A ciência era mais importante que a religião",
+           "O poder político era centralizado no rei",
+           "Deus e a fé estavam no centro de toda a vida e cultura",
+           "A cultura popular dominava sobre a cultura da Igreja"],
+    correta: 2,
+    explicacao: "Teocentrismo = Deus no centro de tudo. A Igreja controlava o conhecimento, a arte, a política e o comportamento.",
+    erradas: {0:"É o oposto — no teocentrismo a religião dominava sobre a ciência.", 1:"Poder centralizado no rei não é teocentrismo — é absolutismo, que veio depois.", 3:"A cultura eclesiástica (da Igreja) é que dominava, não a popular."}
+  },
+  {
+    q: "Qual a principal diferença entre o estilo românico e o estilo gótico?",
+    opts: ["O românico usava vitrais coloridos; o gótico era todo de pedra maciça",
+           "O românico era vertical e alto; o gótico era horizontal e baixo",
+           "O românico tinha paredes grossas e aspecto de fortaleza; o gótico tinha vitrais, torres altas e estrutura vertical",
+           "Ambos eram idênticos e usados apenas em igrejas pequenas"],
+    correta: 2,
+    explicacao: "Românico: pesado, horizontal, paredes grossas — parecia fortaleza. Gótico: leve, vertical, vitrais coloridos, torres altas — transmitia espiritualidade.",
+    erradas: {0:"É o contrário — os vitrais são do gótico, não do românico.", 1:"Inverteu as características — o românico é horizontal e o gótico é vertical.", 3:"São estilos bem diferentes e foram usados em grandes catedrais."}
+  },
+  {
+    q: "As Cruzadas foram expedições militares motivadas por:",
+    opts: ["Apenas interesses econômicos dos camponeses",
+           "Apenas motivações religiosas — reconquistar Jerusalém",
+           "Motivações religiosas e econômicas — reconquistar a Terra Santa e abrir rotas comerciais",
+           "O desejo dos muçulmanos de invadir a Europa"],
+    correta: 2,
+    explicacao: "As Cruzadas tinham motivações MISTAS: religiosas (reconquistar Jerusalém, perdão dos pecados) e econômicas (novas terras, rotas comerciais).",
+    erradas: {0:"Não foram apenas econômicas e não foram dos camponeses — a nobreza liderou por motivos religiosos e econômicos.", 1:"Não foram apenas religiosas — havia fortes interesses econômicos também.", 3:"As Cruzadas foram iniciativa dos cristãos europeus contra os muçulmanos, não o contrário."}
+  },
+  {
+    q: "Jerusalém é considerada sagrada para três religiões. São elas:",
+    opts: ["Judaísmo, cristianismo e islamismo",
+           "Judaísmo, budismo e islamismo",
+           "Cristianismo, hinduísmo e budismo",
+           "Islamismo, judaísmo e hinduísmo"],
+    correta: 0,
+    explicacao: "Judaísmo (Templo de Salomão), Cristianismo (crucificação de Jesus) e Islamismo (ascensão de Maomé) — as três grandes religiões monoteístas.",
+    erradas: {1:"Budismo não tem ligação com Jerusalém — é uma religião oriental.", 2:"Hinduísmo e budismo não consideram Jerusalém como terra sagrada.", 3:"Hinduísmo é uma religião do subcontinente indiano, sem relação com Jerusalém."}
+  },
+  {
+    q: "Os Cavaleiros Templários são considerados os originários do sistema bancário porque:",
+    opts: ["Foram os primeiros a cunhar moedas na Europa",
+           "Guardavam tesouros e faziam empréstimos a juros durante as Cruzadas",
+           "Criaram os primeiros bancos nas cidades árabes",
+           "O Papa os autorizou a cobrar dízimo diretamente"],
+    correta: 1,
+    explicacao: "Os Templários acumularam riqueza guardando tesouros e fazendo empréstimos a juros — funcionando como banqueiros. Filipe IV os perseguiu para não pagar dívidas.",
+    erradas: {0:"Eles não cunharam moedas — sua atividade bancária era guardar tesouros e emprestar dinheiro.", 2:"Os bancos deles funcionavam na Europa, não nas cidades árabes.", 3:"O Papa não autorizou cobrança de dízimo pelos Templários — o dízimo era da Igreja."}
+  },
+  {
+    q: "Os novos centros urbanos surgidos na Baixa Idade Média eram chamados de:",
+    opts: ["Feudos",
+           "Mosteiros",
+           "Burgos",
+           "Paróquias"],
+    correta: 2,
+    explicacao: "Burgos = novos centros urbanos da Baixa Idade Média, dedicados ao comércio, artesanato e manufatura. Seus moradores = burgueses.",
+    erradas: {0:"Feudos eram propriedades rurais dos nobres, não centros urbanos.", 1:"Mosteiros eram locais religiosos onde monges viviam isolados.", 3:"Paróquias eram divisões religiosas administradas pela Igreja, não centros comerciais."}
+  },
+  {
+    q: "A burguesia medieval era formada por:",
+    opts: ["Membros do clero que abandonaram a Igreja",
+           "Nobres que perderam seus feudos nas guerras",
+           "Moradores dos burgos dedicados ao comércio e artesanato",
+           "Camponeses que fugiram dos feudos para viver no campo"],
+    correta: 2,
+    explicacao: "A burguesia medieval era formada pelos moradores dos burgos (cidades) que viviam do comércio, artesanato e operações bancárias.",
+    erradas: {0:"Clérigos que deixavam a Igreja não formavam a burguesia.", 1:"Nobres empobrecidos não são o mesmo que burgueses — a burguesia surgiu do comércio.", 3:"Os burgueses foram para as CIDADES, não para o campo."}
+  },
+  {
+    q: "As corporações de ofício da Baixa Idade Média serviam para:",
+    opts: ["Treinar cavaleiros para as Cruzadas",
+           "Reunir artesãos do mesmo ofício e regular preços, qualidade e formação",
+           "Administrar os feudos em nome dos senhores ausentes",
+           "Organizar festas e celebrações religiosas nas cidades"],
+    correta: 1,
+    explicacao: "Corporações de ofício reuniam artesãos do mesmo ofício (carpinteiros, sapateiros, etc.) para controlar preços, qualidade e formar aprendizes.",
+    erradas: {0:"Corporações de ofício não treinavam cavaleiros — eram organizações de artesãos.", 2:"A administração de feudos era feita pelos senhores ou seus representantes, não por corporações.", 3:"Festas religiosas eram organizadas pela Igreja, não pelas corporações de ofício."}
+  },
+  {
+    q: "A Liga Hanseática foi importante porque:",
+    opts: ["Organizou a primeira Cruzada contra os muçulmanos",
+           "Reuniu cidades mercantis alemãs que controlavam o comércio do norte europeu",
+           "Criou as primeiras universidades medievais",
+           "Foi a primeira organização religiosa feminina"],
+    correta: 1,
+    explicacao: "A Liga Hanseática era uma liga de cidades mercantis alemãs que dominava o comércio do norte europeu, de Londres a Novgorod.",
+    erradas: {0:"A primeira Cruzada foi convocada pelo Papa Urbano II, não pela Liga Hanseática.", 2:"As universidades surgiram ligadas à Igreja, não à Liga Hanseática.", 3:"A Liga Hanseática era uma organização comercial, não religiosa."}
+  },
+  {
+    q: "A Peste Negra (peste bubônica) chegou à Europa no século XIV e foi causada por:",
+    opts: ["Falta de alimentos e desnutrição generalizada",
+           "Castigo divino, segundo a Igreja da época",
+           "A bactéria Yersinia pestis, transmitida por pulgas de ratos em navios comerciais",
+           "Contaminação da água dos rios europeus por metais pesados"],
+    correta: 2,
+    explicacao: "A Peste Negra foi causada pela bactéria Yersinia pestis, transmitida por pulgas de ratos. Chegou à Europa por navios do Oriente (1346-1348). NÃO era castigo divino.",
+    erradas: {0:"A fome enfraqueceu a população, mas a CAUSA da Peste foi a bactéria Yersinia pestis.", 1:"Castigo divino era a explicação religiosa da época, mas a causa real é científica: uma bactéria.", 3:"Não houve contaminação por metais — a transmissão era por pulgas de ratos infectados."}
+  },
+  {
+    q: "A crise demográfica do século XIV ocorreu porque:",
+    opts: ["A população europeia cresceu demais e invadiu territórios muçulmanos",
+           "A Peste Negra matou cerca de 1/3 da população europeia, agravada pela fome e falta de higiene",
+           "Os nobres feudais impediram os camponeses de se reproduzir",
+           "O Papa ordenou o fechamento das cidades para evitar guerras"],
+    correta: 1,
+    explicacao: "A crise demográfica foi gravíssima: a Peste Negra matou cerca de 1/3 da população europeia. A fome e a falta de higiene agravaram tudo.",
+    erradas: {0:"A crise demográfica é DIMINUIÇÃO da população, não crescimento. E não houve invasão de territórios muçulmanos nesse contexto.", 2:"Os nobres não impediram reprodução — a causa foi a Peste Negra e a fome.", 3:"O Papa não ordenou fechamento de cidades — as pessoas fugiam por conta própria."}
+  },
+];
+
+let respostas = new Array(QUIZ.length).fill(-1);
+let enviado = false;
+let codigoLiberado = false;
+
+function init() {
+  const area = document.getElementById('quizArea');
+  QUIZ.forEach((q, i) => {
+    let html = `<div class="q-card" id="qcard${i}">
+      <div class="q-num">${i+1}</div>
+      <div class="q-texto">${q.q}</div>
+      <div class="opcoes">`;
+    const letras = ['A','B','C','D'];
+    q.opts.forEach((opt, j) => {
+      html += `<div class="opcao" id="opt${i}_${j}" onclick="selecionar(${i},${j})">
+        <span class="opcao-letra">${letras[j]}</span>
+        <span>${opt}</span>
+      </div>`;
+    });
+    html += `</div>
+      <div class="feedback" id="fb${i}"></div>
+    </div>`;
+    area.innerHTML += html;
+  });
+}
+
+function selecionar(qi, oi) {
+  if (enviado) return;
+  // Limpar seleção anterior
+  for (let j = 0; j < QUIZ[qi].opts.length; j++) {
+    document.getElementById(`opt${qi}_${j}`).classList.remove('selecionada');
+  }
+  document.getElementById(`opt${qi}_${oi}`).classList.add('selecionada');
+  respostas[qi] = oi;
+  document.getElementById(`qcard${qi}`).classList.add('respondida');
+  document.getElementById(`qcard${qi}`).classList.remove('faltando');
+  atualizarProgresso();
+}
+
+function atualizarProgresso() {
+  const resp = respostas.filter(r => r >= 0).length;
+  const pct = Math.round((resp / QUIZ.length) * 100);
+  document.getElementById('progTexto').textContent = `${resp} de ${QUIZ.length} respondidas`;
+  document.getElementById('progPct').textContent = `${pct}%`;
+  document.getElementById('progFill').style.width = `${pct}%`;
+
+  const btn = document.getElementById('btnEnviar');
+  if (resp === QUIZ.length) {
+    btn.classList.remove('desabilitado');
+    btn.classList.add('ativo');
+  } else {
+    btn.classList.add('desabilitado');
+    btn.classList.remove('ativo');
+  }
+}
+
+function tentarEnviar() {
+  if (enviado) return;
+  const faltando = [];
+  respostas.forEach((r, i) => {
+    if (r < 0) faltando.push(i + 1);
+  });
+
+  if (faltando.length > 0) {
+    const aviso = document.getElementById('avisoFaltam');
+    aviso.textContent = `Faltam: ${faltando.join(', ')}`;
+    aviso.style.display = 'block';
+    // Highlight missing
+    faltando.forEach(n => {
+      const card = document.getElementById(`qcard${n-1}`);
+      card.classList.add('faltando');
+      setTimeout(() => card.classList.remove('faltando'), 1000);
+    });
+    // Scroll to first missing
+    document.getElementById(`qcard${faltando[0]-1}`).scrollIntoView({behavior:'smooth', block:'center'});
+    return;
+  }
+
+  // Calcular resultado
+  enviado = true;
+  let acertos = 0;
+  respostas.forEach((r, i) => { if (r === QUIZ[i].correta) acertos++; });
+
+  // Gerar código
+  const letras = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+  const r1 = letras[Math.floor(Math.random()*letras.length)];
+  const r2 = letras[Math.floor(Math.random()*letras.length)];
+  const codigo = `MED-${acertos}-${r1}${r2}`;
+
+  // Mostrar resultado
+  const pct = Math.round((acertos/QUIZ.length)*100);
+  let emoji, titulo, msg;
+  if (pct >= 80) { emoji = '🏆'; titulo = 'Excelente!'; msg = 'Você dominou o conteúdo medieval!'; }
+  else if (pct >= 60) { emoji = '👏'; titulo = 'Bom trabalho!'; msg = 'Revise os pontos que errou e vai ficar ainda melhor!'; }
+  else if (pct >= 40) { emoji = '📚'; titulo = 'Quase lá!'; msg = 'Releia o resumo interativo e tente novamente depois!'; }
+  else { emoji = '💪'; titulo = 'Não desista!'; msg = 'Estude pelo resumo interativo e volte a tentar — você consegue!'; }
+
+  document.getElementById('resEmoji').textContent = emoji;
+  document.getElementById('resTitulo').textContent = titulo;
+  document.getElementById('resNota').textContent = `${acertos}/${QUIZ.length}`;
+  document.getElementById('resMsg').textContent = msg;
+  document.getElementById('resCodigo').textContent = codigo;
+  document.getElementById('resultadoOverlay').classList.add('visivel');
+
+  // Mostrar barra fixa com código permanente
+  document.getElementById('rbNota').textContent = `📝 ${acertos}/${QUIZ.length}`;
+  document.getElementById('rbCodigo').textContent = codigo;
+  document.getElementById('resultadoBarra').classList.add('visivel');
+
+  // Esconder barra de progresso e botão enviar
+  document.querySelector('.progress-container').style.display = 'none';
+  document.getElementById('bottomBar').style.display = 'none';
+}
+
+function fecharResultado() {
+  document.getElementById('resultadoOverlay').classList.remove('visivel');
+  // Mostrar botão para pedir código de liberação
+  if (!codigoLiberado) {
+    const area = document.getElementById('quizArea');
+    const codigoHTML = `<div class="trava-msg visivel" id="travaMsg">
+      🔒 <strong>Gabarito bloqueado.</strong><br>
+      Mostre o código de liberação para um adulto.<br>
+      Quando ele autorizar, digite o código abaixo:<br><br>
+      <input type="text" id="inputCodigo" placeholder="Digite o código aqui" 
+        style="padding:10px 14px; border:2px solid var(--borda); border-radius:8px; font-size:16px; 
+        text-align:center; width:200px; font-family:monospace; text-transform:uppercase;">
+      <br><br>
+      <button onclick="verificarCodigo()" style="padding:10px 24px; background:var(--azul); color:white; 
+        border:none; border-radius:8px; font-size:14px; font-weight:700; cursor:pointer; font-family:'Source Sans 3',sans-serif;">
+        Liberar Gabarito
+      </button>
+      <div id="codigoErro" style="color:var(--vermelho); font-size:12px; margin-top:8px; display:none;">
+        Código incorreto. Peça ao adulto o código correto.
+      </div>
+    </div>`;
+    area.insertAdjacentHTML('afterbegin', codigoHTML);
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+}
+
+function verificarCodigo() {
+  const input = document.getElementById('inputCodigo').value.trim().toUpperCase();
+  const codigoCorreto = document.getElementById('resCodigo').textContent;
+  if (input === codigoCorreto) {
+    codigoLiberado = true;
+    document.getElementById('travaMsg').style.display = 'none';
+    liberarGabarito();
+  } else {
+    document.getElementById('codigoErro').style.display = 'block';
+  }
+}
+
+function liberarGabarito() {
+  // Atualizar barra fixa para "liberado"
+  const rbStatus = document.getElementById('rbStatus');
+  rbStatus.textContent = '✅ Gabarito liberado';
+  rbStatus.classList.remove('bloqueado');
+  rbStatus.classList.add('liberado');
+
+  const letras = ['A','B','C','D'];
+  QUIZ.forEach((q, i) => {
+    const card = document.getElementById(`qcard${i}`);
+    card.classList.add('bloqueada');
+
+    const escolheu = respostas[i];
+    const acertou = escolheu === q.correta;
+
+    // Marcar opções
+    q.opts.forEach((_, j) => {
+      const opt = document.getElementById(`opt${i}_${j}`);
+      if (j === q.correta) opt.classList.add('resposta-certa');
+      if (j === escolheu && acertou) opt.classList.add('correta');
+      if (j === escolheu && !acertou) opt.classList.add('errada');
+    });
+
+    // Feedback
+    const fb = document.getElementById(`fb${i}`);
+    fb.style.display = 'block';
+    if (acertou) {
+      fb.className = 'feedback acertou';
+      fb.innerHTML = `<div class="feedback-titulo">✅ Você acertou!</div>
+        <div>${q.explicacao}</div>`;
+    } else {
+      let erradasHTML = '';
+      for (const [idx, motivo] of Object.entries(q.erradas)) {
+        erradasHTML += `<p style="color:#888"><strong>${letras[idx]})</strong> ${motivo}</p>`;
+      }
+      fb.className = 'feedback errou';
+      fb.innerHTML = `<div class="feedback-titulo">❌ Resposta incorreta</div>
+        <div><strong style="color:var(--verde)">Correta: ${letras[q.correta]})</strong> ${q.explicacao}</div>
+        <div class="feedback-erradas">
+          <strong>Por que as outras estão erradas:</strong>
+          ${erradasHTML}
+        </div>`;
+    }
+  });
+
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function mostrarCorrecao() {
+  document.getElementById('resultadoOverlay').classList.remove('visivel');
+  codigoLiberado = true;
+  document.getElementById('travaMsg')?.remove();
+  liberarGabarito();
+}
+
+init();
+</script>
+</body>
+</html>

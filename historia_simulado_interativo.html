@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📋 Simulado Interativo — Idade Média</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f8f5ef;
+  --card: #ffffff;
+  --borda: #e0d8c8;
+  --texto: #2c2418;
+  --texto2: #5a4e3c;
+  --verde: #1a7a3a;
+  --verde-bg: #e8f5ec;
+  --vermelho: #b91c1c;
+  --vermelho-bg: #fef2f2;
+  --dourado: #8b6914;
+  --dourado-bg: #fdf6e3;
+  --azul: #1a4a7a;
+  --azul-bg: #eff6ff;
+  --cinza: #6b7280;
+  --cinza-bg: #f3f4f6;
+  --sombra: 0 2px 12px rgba(44,36,24,0.08);
+  --raio: 12px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); font-family: 'Source Sans 3', sans-serif; color: var(--texto); min-height: 100vh; }
+
+.header {
+  background: linear-gradient(135deg, #0f1a2e 0%, #1a2a44 100%);
+  color: #f8f5ef;
+  padding: 24px 20px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.header::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0; height: 4px;
+  background: linear-gradient(90deg, var(--vermelho), #dc2626, var(--vermelho));
+}
+.header h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(22px, 5vw, 32px);
+  font-weight: 900;
+  margin-bottom: 4px;
+}
+.header p { font-size: 13px; opacity: 0.7; }
+.header .badge-prova {
+  display: inline-block;
+  background: rgba(185,28,28,0.3);
+  border: 1px solid rgba(185,28,28,0.5);
+  color: #fca5a5;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  padding: 3px 12px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+/* ── BARRA DE RESULTADO FIXA ── */
+.resultado-barra {
+  display: none;
+  background: linear-gradient(135deg, #0f1a2e, #1a2a44);
+  color: #f8f5ef;
+  padding: 12px 20px;
+  text-align: center;
+  position: sticky;
+  top: 0;
+  z-index: 150;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+.resultado-barra.visivel { display: block; }
+.resultado-barra-inner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  max-width: 700px;
+  margin: 0 auto;
+}
+.rb-nota { font-family: 'Playfair Display',serif; font-size: 20px; font-weight: 900; }
+.rb-codigo {
+  background: rgba(185,28,28,0.2);
+  border: 1px solid rgba(185,28,28,0.5);
+  padding: 4px 14px;
+  border-radius: 6px;
+  font-family: monospace;
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  color: #fca5a5;
+}
+.rb-status {
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-weight: 700;
+}
+.rb-status.bloqueado { background: rgba(185,28,28,0.2); color: #fca5a5; }
+.rb-status.liberado { background: rgba(26,122,58,0.2); color: #86efac; }
+
+/* ── PROGRESS BAR ── */
+.progress-container {
+  background: var(--card);
+  border-bottom: 1px solid var(--borda);
+  padding: 14px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: var(--sombra);
+}
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--texto2);
+}
+.progress-bar {
+  height: 8px;
+  background: var(--cinza-bg);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--vermelho), #dc2626);
+  border-radius: 4px;
+  transition: width 0.4s ease;
+  width: 0%;
+}
+
+.content { max-width: 700px; margin: 0 auto; padding: 20px 16px 100px; }
+
+/* ── QUESTION CARD ── */
+.q-card {
+  background: var(--card);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+  padding: 20px;
+  margin-bottom: 14px;
+  box-shadow: var(--sombra);
+  transition: border-color 0.3s;
+  position: relative;
+}
+.q-card.respondida { border-color: var(--verde); }
+.q-card.faltando { border-color: var(--vermelho); animation: shake 0.4s ease; }
+@keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-4px)} 75%{transform:translateX(4px)} }
+
+.q-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--cinza-bg);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--texto2);
+  margin-bottom: 10px;
+  transition: background 0.3s, color 0.3s;
+}
+.q-card.respondida .q-num { background: var(--verde); color: white; }
+
+.q-texto {
+  font-size: 14.5px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--texto);
+  margin-bottom: 14px;
+}
+
+.opcoes { display: flex; flex-direction: column; gap: 8px; }
+.opcao {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 2px solid var(--borda);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: var(--texto2);
+  user-select: none;
+  -webkit-user-select: none;
+}
+.opcao:hover { border-color: var(--dourado); background: var(--dourado-bg); }
+.opcao.selecionada {
+  border-color: var(--azul);
+  background: var(--azul-bg);
+  color: var(--texto);
+  font-weight: 600;
+}
+.opcao-letra {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 700;
+  background: var(--cinza-bg);
+  color: var(--texto2);
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+.opcao.selecionada .opcao-letra { background: var(--azul); color: white; }
+
+/* ── BLOQUEADA ── */
+.q-card.bloqueada .opcao { cursor: default; pointer-events: none; }
+.q-card.bloqueada .opcao.selecionada.correta { border-color: var(--verde); background: var(--verde-bg); }
+.q-card.bloqueada .opcao.selecionada.correta .opcao-letra { background: var(--verde); color: white; }
+.q-card.bloqueada .opcao.selecionada.errada { border-color: var(--vermelho); background: var(--vermelho-bg); }
+.q-card.bloqueada .opcao.selecionada.errada .opcao-letra { background: var(--vermelho); color: white; }
+.q-card.bloqueada .opcao.resposta-certa:not(.selecionada) { border-color: var(--verde); background: var(--verde-bg); }
+.q-card.bloqueada .opcao.resposta-certa:not(.selecionada) .opcao-letra { background: var(--verde); color: white; }
+
+/* ── FEEDBACK ── */
+.feedback { display: none; margin-top: 14px; padding: 12px 14px; border-radius: 8px; font-size: 12.5px; line-height: 1.55; }
+.feedback.acertou { background: var(--verde-bg); border-left: 4px solid var(--verde); }
+.feedback.errou { background: var(--vermelho-bg); border-left: 4px solid var(--vermelho); }
+.feedback-titulo { font-weight: 700; font-size: 13px; margin-bottom: 4px; }
+.feedback.acertou .feedback-titulo { color: var(--verde); }
+.feedback.errou .feedback-titulo { color: var(--vermelho); }
+.feedback-erradas { margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(0,0,0,0.08); color: var(--cinza); font-size: 12px; }
+.feedback-erradas p { margin-bottom: 3px; }
+
+/* ── BOTTOM BAR ── */
+.bottom-bar {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: var(--card);
+  border-top: 1px solid var(--borda);
+  padding: 14px 20px;
+  display: flex; justify-content: center; gap: 12px; align-items: center;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.06);
+  z-index: 100;
+}
+.btn-enviar {
+  padding: 12px 32px; border: none; border-radius: 8px;
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.2s;
+}
+.btn-enviar.desabilitado { background: var(--cinza-bg); color: var(--cinza); cursor: not-allowed; }
+.btn-enviar.ativo { background: var(--vermelho); color: white; box-shadow: 0 4px 12px rgba(185,28,28,0.3); }
+.btn-enviar.ativo:hover { background: #991b1b; transform: translateY(-1px); }
+.aviso-faltam { font-size: 12px; color: var(--vermelho); font-weight: 600; display: none; }
+
+/* ── RESULTADO OVERLAY ── */
+.resultado-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(15,26,46,0.9);
+  z-index: 200; justify-content: center; align-items: center; padding: 20px;
+}
+.resultado-overlay.visivel { display: flex; }
+.resultado-card {
+  background: var(--card); border-radius: 16px; padding: 32px 28px;
+  max-width: 420px; width: 100%; text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  animation: pop 0.3s ease;
+}
+@keyframes pop { from{transform:scale(0.9);opacity:0} to{transform:scale(1);opacity:1} }
+.resultado-emoji { font-size: 56px; margin-bottom: 12px; }
+.resultado-titulo { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 900; margin-bottom: 6px; }
+.resultado-nota { font-size: 48px; font-weight: 900; color: var(--vermelho); margin: 12px 0; }
+.resultado-msg { font-size: 14px; color: var(--texto2); margin-bottom: 16px; line-height: 1.5; }
+.codigo-box {
+  background: #fef2f2; border: 2px dashed var(--vermelho);
+  border-radius: 8px; padding: 14px; margin: 16px 0;
+}
+.codigo-label { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--vermelho); margin-bottom: 6px; }
+.codigo-valor { font-family: monospace; font-size: 28px; font-weight: 900; color: var(--texto); letter-spacing: 3px; }
+.codigo-instrucao { font-size: 11px; color: var(--texto2); margin-top: 6px; }
+.btn-fechar-resultado {
+  margin-top: 10px; padding: 8px 20px; background: transparent;
+  border: 1px solid var(--borda); border-radius: 8px;
+  font-family: 'Source Sans 3', sans-serif; font-size: 13px; color: var(--texto2); cursor: pointer;
+}
+
+/* ── TRAVA ── */
+.trava-msg { display: none; text-align: center; padding: 20px; font-size: 14px; color: var(--texto2); background: var(--cinza-bg); border-radius: var(--raio); margin-bottom: 14px; }
+.trava-msg.visivel { display: block; }
+
+@media (max-width: 480px) {
+  .q-card { padding: 16px; }
+  .opcao { padding: 10px 12px; font-size: 13px; }
+  .resultado-nota { font-size: 40px; }
+  .codigo-valor { font-size: 22px; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="badge-prova">SIMULADO COMPLETO • 25 QUESTÕES</div>
+  <h1>📋 Simulado — Idade Média</h1>
+  <p>Cap. 3, 4, 5 e pág. 98 do Cap. 6 • História 7º ano</p>
+</div>
+
+<div class="resultado-barra" id="resultadoBarra">
+  <div class="resultado-barra-inner">
+    <span class="rb-nota" id="rbNota">📋 0/25</span>
+    <span>🔑</span>
+    <span class="rb-codigo" id="rbCodigo">---</span>
+    <span class="rb-status bloqueado" id="rbStatus">🔒 Gabarito bloqueado</span>
+  </div>
+</div>
+
+<div class="progress-container" id="progressContainer">
+  <div class="progress-info">
+    <span id="progTexto">0 de 25 respondidas</span>
+    <span id="progPct">0%</span>
+  </div>
+  <div class="progress-bar">
+    <div class="progress-fill" id="progFill"></div>
+  </div>
+</div>
+
+<div class="content" id="simArea"></div>
+
+<div class="bottom-bar" id="bottomBar">
+  <span class="aviso-faltam" id="avisoFaltam"></span>
+  <button class="btn-enviar desabilitado" id="btnEnviar" onclick="tentarEnviar()">Enviar Simulado</button>
+</div>
+
+<div class="resultado-overlay" id="resultadoOverlay">
+  <div class="resultado-card">
+    <div class="resultado-emoji" id="resEmoji">🎯</div>
+    <div class="resultado-titulo" id="resTitulo">Resultado</div>
+    <div class="resultado-nota" id="resNota">0/25</div>
+    <div class="resultado-msg" id="resMsg"></div>
+    <div class="codigo-box">
+      <div class="codigo-label">🔑 Código de Liberação</div>
+      <div class="codigo-valor" id="resCodigo">---</div>
+      <div class="codigo-instrucao">Mostre este código para liberar o gabarito comentado</div>
+    </div>
+    <br>
+    <button class="btn-fechar-resultado" onclick="fecharResultado()">Fechar</button>
+  </div>
+</div>
+
+<script>
+const SIM = [
+  {q:"O processo de ruralização da Europa na Alta Idade Média ocorreu porque:",
+   opts:["Os reis ordenaram que todos vivessem no campo","As guerras e invasões bárbaras levaram as pessoas a buscar proteção nos feudos dos nobres","O comércio com o Oriente exigia mão de obra agrícola","A Igreja proibia a vida nas cidades"],
+   correta:1,
+   explicacao:"A ruralização ocorreu porque guerras e invasões bárbaras tornaram as cidades inseguras, levando as pessoas a buscar proteção nos feudos dos nobres.",
+   erradas:{0:"Os reis não deram essa ordem — a ruralização foi espontânea, causada pela insegurança.",2:"O comércio com o Oriente estava praticamente parado na Alta Idade Média.",3:"A Igreja nunca proibiu a vida nas cidades."}},
+
+  {q:"O feudo era dividido em manso senhorial, manso servil e manso comunal. O manso senhorial compreendia:",
+   opts:["As terras emprestadas aos servos para plantio","A área de uso comum para lenha e pastagem","O castelo, as terras férteis, o moinho e o celeiro — tudo reservado ao senhor","Uma área dedicada exclusivamente à Igreja e ao clero"],
+   correta:2,
+   explicacao:"O manso senhorial era a parte reservada ao senhor: castelo, terras férteis, moinho e celeiro.",
+   erradas:{0:"As terras dos servos formavam o manso SERVIL, não o senhorial.",1:"A área de uso comum era o manso COMUNAL.",3:"Não existia uma divisão do feudo exclusiva para a Igreja."}},
+
+  {q:"No feudalismo, dizemos que o poder era descentralizado. Isso significa que:",
+   opts:["O rei governava com poder absoluto sobre todo o território","Cada senhor feudal tinha autonomia em seu feudo, enfraquecendo o poder do rei","O povo elegia democraticamente seus governantes","O Papa era a única autoridade política da Europa"],
+   correta:1,
+   explicacao:"Poder descentralizado = cada senhor feudal tinha autonomia dentro de seu feudo. O poder real do rei era limitado.",
+   erradas:{0:"É o oposto — no feudalismo o rei NÃO tinha poder absoluto.",2:"Não existia democracia ou eleições na Idade Média feudal.",3:"O Papa tinha influência religiosa, mas não governava diretamente todos os feudos."}},
+
+  {q:"A expressão 'o rei existia, mas era um rei fraco' se refere ao fato de que:",
+   opts:["O rei era sempre doente e não conseguia governar","Os servos tinham mais poder que o rei","Ao distribuir terras aos nobres, o rei ganhava aliados, mas perdia autoridade sobre os territórios","O rei vivia escondido nos mosteiros e não aparecia em público"],
+   correta:2,
+   explicacao:"Ao distribuir terras para ganhar aliados militares, o rei perdia autoridade sobre esses territórios. Os nobres tinham autonomia total em seus feudos.",
+   erradas:{0:"'Rei fraco' se refere ao poder político, não à saúde física.",1:"Os servos não tinham nenhum poder político.",3:"O rei não vivia escondido; existia como figura política, mas com poder limitado."}},
+
+  {q:"A sociedade medieval era organizada em três ordens. Os oratores, bellatores e laboratores eram, respectivamente:",
+   opts:["Os que comerciavam, os que navegavam e os que caçavam","Os que rezavam (clero), os que guerreavam (nobreza) e os que trabalhavam (camponeses)","Os que escreviam, os que cantavam e os que construíam","Os que governavam, os que julgavam e os que legislavam"],
+   correta:1,
+   explicacao:"Oratores = os que oram (clero). Bellatores = os que guerreiam (nobreza/cavaleiros). Laboratores = os que trabalham (camponeses/servos).",
+   erradas:{0:"Comércio, navegação e caça não representam as três ordens medievais.",2:"Escrever, cantar e construir não correspondem à divisão social da Idade Média.",3:"Governar, julgar e legislar são funções de um Estado moderno, não da sociedade estamental."}},
+
+  {q:"Na Idade Média, a palavra 'herege' se referia a:",
+   opts:["Um monge que se dedicava à cópia de livros","Um nobre guerreiro que participava das Cruzadas","Quem professava doutrina contrária ao que a Igreja estabeleceu como dogma","Um camponês que se revoltava contra o senhor feudal"],
+   correta:2,
+   explicacao:"Herege = quem professa doutrina contrária ao dogma da Igreja. Podiam ser julgados pela Inquisição.",
+   erradas:{0:"O monge copista era chamado de copista ou escriba, não de herege.",1:"O nobre guerreiro das Cruzadas era chamado de cruzado.",3:"Camponês revoltoso não era herege — heresia era questão religiosa, não social."}},
+
+  {q:"O clero regular se diferenciava do clero secular porque:",
+   opts:["O clero regular vivia isolado em mosteiros ou conventos, seguindo regras rígidas","O clero regular vivia entre o povo e celebrava missas nas paróquias","O clero secular vivia em mosteiros e não tinha contato com a população","Não havia diferença — ambos tinham a mesma função"],
+   correta:0,
+   explicacao:"O clero regular vivia em mosteiros/conventos seguindo regras rígidas. 'Regular' vem de 'regula' (regra em latim).",
+   erradas:{1:"É o contrário — quem vivia entre o povo era o clero SECULAR.",2:"Inverte os conceitos — o clero secular vivia com o povo, não em mosteiros.",3:"Havia diferença clara: regular = mosteiros; secular = paróquias com o povo."}},
+
+  {q:"As iluminuras medievais eram:",
+   opts:["Velas especiais usadas para iluminar os castelos à noite","Desenhos feitos à mão em livros medievais pelos monges copistas, decorados com ouro e prata","Janelas de vidro colorido das catedrais góticas","Instrumentos musicais usados pelos trovadores"],
+   correta:1,
+   explicacao:"Iluminuras = desenhos detalhados feitos à mão em livros medievais pelos monges copistas, usando folhas de ouro ou prata.",
+   erradas:{0:"Iluminuras não eram velas — eram ilustrações em manuscritos.",2:"Janelas de vidro colorido são vitrais, não iluminuras.",3:"Instrumentos musicais não têm relação com iluminuras."}},
+
+  {q:"A cultura medieval era teocêntrica, ou seja, centrada em Deus. Uma consequência disso era que:",
+   opts:["A Igreja não tinha poder sobre a educação ou a arte","A ciência era valorizada acima da religião","A Igreja controlava o conhecimento, a arte, a política e o comportamento da sociedade","Os camponeses tinham total liberdade religiosa"],
+   correta:2,
+   explicacao:"Com o teocentrismo, a Igreja dominava toda a vida medieval: educação, arte, política e comportamento.",
+   erradas:{0:"É o oposto — a Igreja tinha poder ENORME sobre educação e arte.",1:"No teocentrismo, a religião era mais importante que a ciência.",3:"Não havia liberdade religiosa — quem não seguisse o catolicismo podia ser perseguido."}},
+
+  {q:"As Cruzadas aconteceram entre os séculos XI e XIII. A primeira foi convocada pelo papa Urbano II no:",
+   opts:["Concílio de Niceia, em 325","Concílio de Clermont, em 1095","Concílio de Trento, em 1545","Concílio de Latrão, em 1215"],
+   correta:1,
+   explicacao:"Papa Urbano II convocou a primeira Cruzada no Concílio de Clermont, em 1095, na França.",
+   erradas:{0:"O Concílio de Niceia (325) tratou de questões teológicas do cristianismo primitivo, séculos antes.",2:"O Concílio de Trento (1545) foi sobre a Contrarreforma, séculos depois.",3:"O Concílio de Latrão (1215) aconteceu depois da primeira Cruzada."}},
+
+  {q:"Além da motivação religiosa, as Cruzadas atraíram nobres sem herança porque:",
+   opts:["O Papa prometia terras no Oriente para os primogênitos","Apenas o filho mais velho (primogênito) herdava as terras, e os demais ficavam sem posses","Os nobres recebiam salários do rei para participar","Todos os filhos herdavam igualmente e tinham terras de sobra"],
+   correta:1,
+   explicacao:"Pelo direito de primogenitura, apenas o filho mais velho herdava. Os demais buscavam terras e riquezas nas Cruzadas.",
+   erradas:{0:"Os primogênitos já tinham herança — eram os NÃO primogênitos que buscavam terras.",2:"Não havia sistema de salários para participar das Cruzadas.",3:"É o oposto — NÃO herdavam igualmente, só o primogênito herdava."}},
+
+  {q:"A principal consequência comercial das Cruzadas foi:",
+   opts:["O fechamento do Mar Mediterrâneo ao comércio europeu","A destruição de todas as rotas comerciais do Oriente","A reabertura do Mar Mediterrâneo à navegação e ao comércio, impulsionando o Renascimento comercial","A proibição de qualquer comércio com povos muçulmanos"],
+   correta:2,
+   explicacao:"As Cruzadas reabriram o Mediterrâneo ao comércio europeu, impulsionando o Renascimento comercial.",
+   erradas:{0:"É o oposto — as Cruzadas ABRIRAM o Mediterrâneo, não o fecharam.",1:"As rotas não foram destruídas; foram reativadas e ampliadas.",3:"Não houve proibição — o comércio com o Oriente foi intensificado."}},
+
+  {q:"Os europeus tiveram contato com os árabes durante as Cruzadas e aprenderam sobre diversas áreas. Qual alternativa apresenta áreas de conhecimento CORRETAS?",
+   opts:["Culinária, moda e esportes","Medicina, Astronomia, Matemática e Navegação","Pecuária, mineração e pesca","Música, dança e teatro"],
+   correta:1,
+   explicacao:"O contato com os árabes trouxe avanços em Medicina, Astronomia, Matemática, Navegação e Arquitetura.",
+   erradas:{0:"Culinária, moda e esportes não foram as áreas destacadas nas trocas culturais.",2:"Pecuária, mineração e pesca não são os conhecimentos que os europeus adquiriram dos árabes.",3:"As principais contribuições árabes foram científicas e técnicas, não artísticas."}},
+
+  {q:"O Renascimento comercial da Baixa Idade Média foi impulsionado por:",
+   opts:["O declínio das guerras e invasões, melhoria das técnicas agrícolas e crescimento populacional","A criação de novas ordens religiosas dedicadas ao comércio","O fim do cristianismo e a adoção de uma religião comercial","A chegada de comerciantes chineses pela Rota da Seda"],
+   correta:0,
+   explicacao:"O Renascimento comercial foi impulsionado pelo fim das invasões, melhorias agrícolas (charrua, moinhos, rotação trienal) e crescimento populacional.",
+   erradas:{1:"Não foram criadas ordens religiosas dedicadas ao comércio — a Igreja condenava a usura.",2:"O cristianismo não acabou na Idade Média.",3:"Não houve chegada direta de comerciantes chineses — o comércio era feito por intermediários."}},
+
+  {q:"A usura era a prática de:",
+   opts:["Vender produtos falsificados nas feiras medievais","Cobrar juros sobre empréstimos de dinheiro — prática condenada pela Igreja","Roubar terras dos senhores feudais durante as Cruzadas","Cultivar terras sem autorização do senhor feudal"],
+   correta:1,
+   explicacao:"Usura = cobrar juros sobre empréstimos. A Igreja condenava, mas os banqueiros dos burgos praticavam e enriqueciam.",
+   erradas:{0:"Vender produtos falsificados não é usura — usura é cobrar juros.",2:"Roubar terras não tem relação com usura.",3:"Cultivar sem autorização não é usura."}},
+
+  {q:"As feiras medievais mais famosas eram as de Champagne, na França. Elas eram importantes porque:",
+   opts:["Vendiam apenas produtos religiosos para peregrinos","Reuniam comerciantes de várias partes do mundo, com produtos variados, e exigiam cambistas para trocar moedas","Funcionavam todos os dias da semana durante o ano todo","Eram organizadas exclusivamente pela Igreja Católica"],
+   correta:1,
+   explicacao:"As feiras de Champagne reuniam comerciantes de várias partes do mundo. Como cada região tinha sua moeda, cambistas eram essenciais.",
+   erradas:{0:"Vendiam TODOS os tipos de produtos, não apenas religiosos.",2:"Eram temporárias — 1 a 2 vezes ao ano, vários dias.",3:"Eram organizadas por comerciantes e nobres locais, não pela Igreja."}},
+
+  {q:"Um aluno afirmou: 'As Cruzadas foram expedições de camponeses pobres contra a nobreza europeia'. Essa afirmação está:",
+   opts:["Correta, pois os camponeses lideraram todas as expedições","Incorreta, pois as Cruzadas foram expedições militares organizadas pela nobreza e incentivadas pelo Papa contra os muçulmanos","Correta, pois o Papa apoiava os camponeses contra os nobres","Incorreta, pois as Cruzadas foram conflitos entre cristãos e budistas"],
+   correta:1,
+   explicacao:"As Cruzadas foram expedições militares organizadas pela nobreza, incentivadas pelo Papa, contra os muçulmanos turcos seljúcidas.",
+   erradas:{0:"Os camponeses não lideraram — a liderança era da nobreza e dos reis.",2:"O Papa não apoiava camponeses contra nobres — incentivava nobres a lutarem contra muçulmanos.",3:"Foram conflitos entre cristãos e muçulmanos, não budistas."}},
+
+  {q:"A crise do século XIV na Europa começou com:",
+   opts:["O aumento da produção agrícola e da população","A queda da produção por desmatamento excessivo, solos empobrecidos e mudanças climáticas, gerando fome","A descoberta da América por Colombo","A unificação dos reinos europeus sob um único imperador"],
+   correta:1,
+   explicacao:"Desmatamento excessivo empobreceu os solos, mudanças climáticas prejudicaram as colheitas, a produção caiu e veio a fome.",
+   erradas:{0:"É o oposto — a crise começou com a QUEDA da produção.",2:"A descoberta da América foi em 1492, mais de um século depois.",3:"Não houve unificação dos reinos europeus no séc. XIV."}},
+
+  {q:"A Peste Negra se espalhou pela Europa principalmente porque:",
+   opts:["Os médicos transmitiam a doença de paciente em paciente","O vento carregava a bactéria por grandes distâncias","As redes de comércio interligavam as cidades, e a falta de higiene e saneamento facilitou a proliferação de ratos infectados","A doença era transmitida pelo consumo de carne de porco"],
+   correta:2,
+   explicacao:"As redes de comércio espalharam a doença. Falta de higiene e saneamento facilitou a proliferação de ratos infectados.",
+   erradas:{0:"Os médicos não eram o principal vetor — eram as pulgas dos ratos.",1:"A bactéria não era transmitida pelo vento — era por pulgas de ratos.",3:"A Peste não tinha relação com carne de porco."}},
+
+  {q:"A Peste Negra resultou em uma crise demográfica. Isso significa que houve:",
+   opts:["Um grande aumento da população europeia","Uma grande diminuição da população, causada pela epidemia","Uma migração em massa da Europa para a Ásia","O surgimento de novas cidades por toda a Europa"],
+   correta:1,
+   explicacao:"Crise demográfica = grande diminuição da população. A Peste matou aproximadamente 1/3 da população europeia.",
+   erradas:{0:"É o oposto — crise demográfica é DIMINUIÇÃO, não aumento.",2:"Não houve migração para a Ásia — as pessoas fugiam dentro da própria Europa.",3:"A crise causou abandono de cidades, não surgimento de novas."}},
+
+  {q:"Sobre a descentralização do poder no feudalismo, é correto afirmar que:",
+   opts:["O rei detinha poder absoluto e tomava todas as decisões sozinho","Os vassalos podiam dividir suas terras com outros nobres, tornando-se ao mesmo tempo vassalos e suseranos","O Papa governava diretamente todos os feudos europeus","Os camponeses elegiam representantes para um parlamento medieval"],
+   correta:1,
+   explicacao:"Os vassalos podiam subdividir suas terras, criando uma cadeia: eram vassalos do rei e suseranos de outros ao mesmo tempo.",
+   erradas:{0:"O rei NÃO tinha poder absoluto no feudalismo.",2:"O Papa tinha influência religiosa, mas não governava diretamente todos os feudos.",3:"Não existia parlamento ou eleições na sociedade feudal."}},
+
+  {q:"Um efeito negativo das Cruzadas para os senhores feudais foi que:",
+   opts:["Receberam terras demais e não conseguiam administrá-las","Investiram recursos na formação de exércitos e acabaram perdendo servos e terras, acelerando o declínio do feudalismo","O Papa lhes proibiu de possuir feudos após as expedições","Foram forçados a se converter ao islamismo"],
+   correta:1,
+   explicacao:"Muitos senhores investiram recursos em exércitos, perderam servos nas batalhas e enfraqueceram seus feudos, acelerando o declínio do feudalismo.",
+   erradas:{0:"O problema não foi excesso de terras — muitos perderam terras e servos.",2:"O Papa não proibiu a posse de feudos.",3:"Os nobres cristãos não foram forçados a se converter."}},
+
+  {q:"Sobre a cultura popular medieval, é correto afirmar que:",
+   opts:["Se baseava somente na religião católica e nas regras da Igreja","Era composta também de elementos pagãos: mitos, festas, bruxas, dragões e contos de fadas com finais trágicos","Era idêntica à cultura eclesiástica, sem nenhuma diferença","Não possuía nenhuma festividade ou celebração"],
+   correta:1,
+   explicacao:"A cultura popular continha elementos pagãos: Carnaval, mitos, bruxas, dragões, contos de fadas com finais trágicos.",
+   erradas:{0:"A cultura popular NÃO se baseava somente na religião — incluía tradições pagãs.",2:"Eram DIFERENTES — a popular tinha elementos pagãos que a Igreja condenava.",3:"Tinha muitas festividades, como o Carnaval."}},
+
+  {q:"A rotação trienal de culturas, introduzida na Baixa Idade Média, consistia em:",
+   opts:["Plantar o mesmo produto três vezes ao ano no mesmo solo","Alternar o plantio de culturas diferentes em três partes da terra, com uma delas em descanso","Usar três tipos de adubo ao mesmo tempo para enriquecer o solo","Irrigar as plantações três vezes ao dia durante a seca"],
+   correta:1,
+   explicacao:"Rotação trienal: terra dividida em 3 partes — duas com culturas diferentes e uma em descanso. Alternava a cada ano.",
+   erradas:{0:"Plantar a mesma coisa repetidamente esgota o solo — a rotação faz o contrário.",2:"Não é sobre adubo, mas sobre alternar uso do solo entre plantio e descanso.",3:"Não tem relação com irrigação — é sobre manejo do solo."}},
+
+  {q:"Qual é a relação entre as Cruzadas e o Renascimento comercial?",
+   opts:["Não existe relação — foram processos independentes","As Cruzadas destruíram o comércio europeu permanentemente","As Cruzadas reabriram o Mediterrâneo à navegação, intensificando o comércio com o Oriente e impulsionando o Renascimento comercial","O Renascimento comercial causou as Cruzadas, e não o contrário"],
+   correta:2,
+   explicacao:"As Cruzadas reabriram o Mediterrâneo (antes controlado por muçulmanos), intensificando o comércio com o Oriente e impulsionando o Renascimento comercial.",
+   erradas:{0:"Existe relação direta — as Cruzadas foram uma das principais causas do Renascimento comercial.",1:"É o oposto — as Cruzadas REATIVARAM o comércio.",3:"A ordem cronológica é: primeiro as Cruzadas, depois o Renascimento comercial como consequência."}},
+];
+
+const TOTAL = SIM.length;
+let respostas = new Array(TOTAL).fill(-1);
+let enviado = false;
+let codigoLiberado = false;
+
+function init() {
+  const area = document.getElementById('simArea');
+  const letras = ['A','B','C','D'];
+  SIM.forEach((q, i) => {
+    let html = `<div class="q-card" id="qcard${i}">
+      <div class="q-num">${i+1}</div>
+      <div class="q-texto">${i+1}. ${q.q}</div>
+      <div class="opcoes">`;
+    q.opts.forEach((opt, j) => {
+      html += `<div class="opcao" id="opt${i}_${j}" onclick="selecionar(${i},${j})">
+        <span class="opcao-letra">${letras[j]}</span>
+        <span>${opt}</span>
+      </div>`;
+    });
+    html += `</div><div class="feedback" id="fb${i}"></div></div>`;
+    area.innerHTML += html;
+  });
+}
+
+function selecionar(qi, oi) {
+  if (enviado) return;
+  for (let j = 0; j < SIM[qi].opts.length; j++) {
+    document.getElementById(`opt${qi}_${j}`).classList.remove('selecionada');
+  }
+  document.getElementById(`opt${qi}_${oi}`).classList.add('selecionada');
+  respostas[qi] = oi;
+  document.getElementById(`qcard${qi}`).classList.add('respondida');
+  document.getElementById(`qcard${qi}`).classList.remove('faltando');
+  atualizarProgresso();
+}
+
+function atualizarProgresso() {
+  const resp = respostas.filter(r => r >= 0).length;
+  const pct = Math.round((resp / TOTAL) * 100);
+  document.getElementById('progTexto').textContent = `${resp} de ${TOTAL} respondidas`;
+  document.getElementById('progPct').textContent = `${pct}%`;
+  document.getElementById('progFill').style.width = `${pct}%`;
+  const btn = document.getElementById('btnEnviar');
+  if (resp === TOTAL) { btn.classList.remove('desabilitado'); btn.classList.add('ativo'); }
+  else { btn.classList.add('desabilitado'); btn.classList.remove('ativo'); }
+}
+
+function tentarEnviar() {
+  if (enviado) return;
+  const faltando = [];
+  respostas.forEach((r, i) => { if (r < 0) faltando.push(i + 1); });
+  if (faltando.length > 0) {
+    const aviso = document.getElementById('avisoFaltam');
+    aviso.textContent = `Faltam: questões ${faltando.slice(0,8).join(', ')}${faltando.length > 8 ? '...' : ''}`;
+    aviso.style.display = 'block';
+    faltando.forEach(n => {
+      const card = document.getElementById(`qcard${n-1}`);
+      card.classList.add('faltando');
+      setTimeout(() => card.classList.remove('faltando'), 1000);
+    });
+    document.getElementById(`qcard${faltando[0]-1}`).scrollIntoView({behavior:'smooth', block:'center'});
+    return;
+  }
+  enviado = true;
+  let acertos = 0;
+  respostas.forEach((r, i) => { if (r === SIM[i].correta) acertos++; });
+
+  const letras = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+  const r1 = letras[Math.floor(Math.random()*letras.length)];
+  const r2 = letras[Math.floor(Math.random()*letras.length)];
+  const codigo = `SIM-${acertos}-${r1}${r2}`;
+
+  const pct = Math.round((acertos/TOTAL)*100);
+  let emoji, titulo, msg;
+  if (pct >= 80) { emoji='🏆'; titulo='Excelente!'; msg='Você arrasou no simulado!'; }
+  else if (pct >= 64) { emoji='👏'; titulo='Bom trabalho!'; msg='Meta alcançada! Revise os erros para ficar perfeito.'; }
+  else if (pct >= 40) { emoji='📚'; titulo='Quase lá!'; msg='Releia o resumo e tente de novo — você está perto!'; }
+  else { emoji='💪'; titulo='Não desista!'; msg='Estude pelo resumo interativo e volte — você consegue!'; }
+
+  document.getElementById('resEmoji').textContent = emoji;
+  document.getElementById('resTitulo').textContent = titulo;
+  document.getElementById('resNota').textContent = `${acertos}/${TOTAL}`;
+  document.getElementById('resMsg').textContent = msg;
+  document.getElementById('resCodigo').textContent = codigo;
+  document.getElementById('resultadoOverlay').classList.add('visivel');
+
+  document.getElementById('rbNota').textContent = `📋 ${acertos}/${TOTAL}`;
+  document.getElementById('rbCodigo').textContent = codigo;
+  document.getElementById('resultadoBarra').classList.add('visivel');
+  document.getElementById('progressContainer').style.display = 'none';
+  document.getElementById('bottomBar').style.display = 'none';
+}
+
+function fecharResultado() {
+  document.getElementById('resultadoOverlay').classList.remove('visivel');
+  if (!codigoLiberado) {
+    const area = document.getElementById('simArea');
+    if (!document.getElementById('travaMsg')) {
+      const html = `<div class="trava-msg visivel" id="travaMsg">
+        🔒 <strong>Gabarito bloqueado.</strong><br>
+        Mostre o código de liberação para um adulto.<br>
+        Quando ele autorizar, digite o código abaixo:<br><br>
+        <input type="text" id="inputCodigo" placeholder="Digite o código aqui"
+          style="padding:10px 14px; border:2px solid var(--borda); border-radius:8px; font-size:16px;
+          text-align:center; width:220px; font-family:monospace; text-transform:uppercase;">
+        <br><br>
+        <button onclick="verificarCodigo()" style="padding:10px 24px; background:var(--azul); color:white;
+          border:none; border-radius:8px; font-size:14px; font-weight:700; cursor:pointer; font-family:'Source Sans 3',sans-serif;">
+          Liberar Gabarito
+        </button>
+        <div id="codigoErro" style="color:var(--vermelho); font-size:12px; margin-top:8px; display:none;">
+          Código incorreto. Peça ao adulto o código correto.
+        </div>
+      </div>`;
+      area.insertAdjacentHTML('afterbegin', html);
+    }
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+}
+
+function verificarCodigo() {
+  const input = document.getElementById('inputCodigo').value.trim().toUpperCase();
+  const codigoCorreto = document.getElementById('resCodigo').textContent;
+  if (input === codigoCorreto) {
+    codigoLiberado = true;
+    document.getElementById('travaMsg').style.display = 'none';
+    liberarGabarito();
+  } else {
+    document.getElementById('codigoErro').style.display = 'block';
+  }
+}
+
+function liberarGabarito() {
+  const rbStatus = document.getElementById('rbStatus');
+  rbStatus.textContent = '✅ Gabarito liberado';
+  rbStatus.classList.remove('bloqueado');
+  rbStatus.classList.add('liberado');
+
+  const letras = ['A','B','C','D'];
+  SIM.forEach((q, i) => {
+    const card = document.getElementById(`qcard${i}`);
+    card.classList.add('bloqueada');
+    const escolheu = respostas[i];
+    const acertou = escolheu === q.correta;
+    q.opts.forEach((_, j) => {
+      const opt = document.getElementById(`opt${i}_${j}`);
+      if (j === q.correta) opt.classList.add('resposta-certa');
+      if (j === escolheu && acertou) opt.classList.add('correta');
+      if (j === escolheu && !acertou) opt.classList.add('errada');
+    });
+    const fb = document.getElementById(`fb${i}`);
+    fb.style.display = 'block';
+    if (acertou) {
+      fb.className = 'feedback acertou';
+      fb.innerHTML = `<div class="feedback-titulo">✅ Você acertou!</div><div>${q.explicacao}</div>`;
+    } else {
+      let erradasHTML = '';
+      for (const [idx, motivo] of Object.entries(q.erradas)) {
+        erradasHTML += `<p style="color:#888"><strong>${letras[idx]})</strong> ${motivo}</p>`;
+      }
+      fb.className = 'feedback errou';
+      fb.innerHTML = `<div class="feedback-titulo">❌ Resposta incorreta</div>
+        <div><strong style="color:var(--verde)">Correta: ${letras[q.correta]})</strong> ${q.explicacao}</div>
+        <div class="feedback-erradas"><strong>Por que as outras estão erradas:</strong>${erradasHTML}</div>`;
+    }
+  });
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+init();
+</script>
+</body>
+</html>

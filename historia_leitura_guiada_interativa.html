@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📖 Leitura Guiada Interativa — Idade Média</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Source+Sans+3:wght@300;400;600;700&family=Source+Serif+4:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #faf8f4;
+  --card: #ffffff;
+  --borda: #e0d8c8;
+  --texto: #2c2418;
+  --texto2: #5a4e3c;
+  --texto3: #8a7e6e;
+  --verde: #1a7a3a;
+  --verde-bg: #e8f5ec;
+  --vermelho: #b91c1c;
+  --vermelho-bg: #fef2f2;
+  --amarelo: #92700a;
+  --amarelo-bg: #fefce8;
+  --azul: #1a4a7a;
+  --azul-bg: #eff6ff;
+  --roxo: #6b21a8;
+  --roxo-bg: #faf5ff;
+  --cinza: #6b7280;
+  --cinza-bg: #f3f4f6;
+  --sombra: 0 2px 12px rgba(44,36,24,0.08);
+  --raio: 12px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); font-family: 'Source Sans 3', sans-serif; color: var(--texto); min-height: 100vh; }
+
+/* ── HEADER ── */
+.header {
+  background: linear-gradient(135deg, #1a3a2a 0%, #0f2a1a 100%);
+  color: #f0ece4;
+  padding: 24px 20px;
+  text-align: center;
+  position: relative;
+}
+.header::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0; height: 4px;
+  background: linear-gradient(90deg, var(--verde), #2ecc71, var(--verde));
+}
+.header h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(20px, 4.5vw, 30px);
+  font-weight: 900;
+  margin-bottom: 4px;
+}
+.header p { font-size: 13px; opacity: 0.7; }
+
+/* ── PROGRESS ── */
+.progress-container {
+  background: var(--card);
+  border-bottom: 1px solid var(--borda);
+  padding: 14px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: var(--sombra);
+}
+.progress-info {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 8px; font-size: 13px; font-weight: 600; color: var(--texto2);
+}
+.progress-bar { height: 10px; background: var(--cinza-bg); border-radius: 5px; overflow: hidden; }
+.progress-fill {
+  height: 100%; border-radius: 5px; transition: width 0.5s ease;
+  background: linear-gradient(90deg, var(--verde), #2ecc71);
+  width: 0%;
+}
+.progress-blocos {
+  display: flex; gap: 4px; margin-top: 8px; justify-content: center; flex-wrap: wrap;
+}
+.progress-dot {
+  width: 24px; height: 24px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 700;
+  border: 2px solid var(--borda);
+  background: var(--card);
+  color: var(--texto3);
+  transition: all 0.3s;
+  cursor: pointer;
+}
+.progress-dot.atual { border-color: var(--azul); background: var(--azul-bg); color: var(--azul); }
+.progress-dot.completo { border-color: var(--verde); background: var(--verde); color: white; }
+.progress-dot.bloqueado { opacity: 0.4; cursor: not-allowed; }
+
+/* ── CONTENT ── */
+.content { max-width: 720px; margin: 0 auto; padding: 20px 16px 40px; }
+
+/* ── BLOCO ── */
+.bloco {
+  display: none;
+  background: var(--card);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+  overflow: hidden;
+  margin-bottom: 16px;
+  box-shadow: var(--sombra);
+}
+.bloco.visivel { display: block; animation: surgir 0.4s ease; }
+@keyframes surgir { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+
+.bloco-header {
+  background: linear-gradient(135deg, #1a3a2a, #0f2a1a);
+  color: #f0ece4;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.bloco-num {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px; border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  font-family: 'Playfair Display', serif;
+  font-size: 14px; font-weight: 900;
+}
+.bloco-titulo {
+  font-family: 'Playfair Display', serif;
+  font-size: 16px; font-weight: 700;
+}
+
+/* ── TEXTO DO LIVRO ── */
+.bloco-texto {
+  padding: 20px;
+  border-bottom: 1px solid var(--borda);
+}
+.bloco-texto-label {
+  display: inline-block;
+  font-size: 10px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--verde);
+  margin-bottom: 10px;
+  border-bottom: 2px solid var(--verde);
+  padding-bottom: 2px;
+}
+.bloco-texto p {
+  font-family: 'Source Serif 4', serif;
+  font-size: 14.5px; line-height: 1.75; color: var(--texto);
+  margin-bottom: 10px; text-align: justify;
+}
+.bloco-texto p strong { color: var(--texto); }
+
+/* ── PERGUNTAS ── */
+.bloco-perguntas { padding: 20px; }
+.bloco-perguntas-label {
+  display: inline-block;
+  font-size: 10px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--azul);
+  margin-bottom: 14px;
+  border-bottom: 2px solid var(--azul);
+  padding-bottom: 2px;
+}
+
+.pergunta { margin-bottom: 18px; }
+.pergunta-texto {
+  font-size: 14px; font-weight: 600; color: var(--texto);
+  margin-bottom: 8px; line-height: 1.45;
+}
+.pergunta-campo {
+  width: 100%;
+  min-height: 70px;
+  padding: 10px 14px;
+  border: 2px solid var(--borda);
+  border-radius: 8px;
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 14px;
+  color: var(--texto);
+  resize: vertical;
+  transition: border-color 0.2s;
+  background: var(--bg);
+}
+.pergunta-campo:focus { outline: none; border-color: var(--azul); background: white; }
+.pergunta-campo.preenchida { border-color: var(--verde); }
+.pergunta-campo:disabled { background: var(--cinza-bg); opacity: 0.7; cursor: not-allowed; }
+
+/* ── RESPOSTA MODELO ── */
+.resposta-modelo {
+  display: none;
+  margin-top: 10px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: var(--azul-bg);
+  border-left: 4px solid var(--azul);
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--texto2);
+}
+.resposta-modelo-label {
+  font-weight: 700; font-size: 11px; color: var(--azul);
+  letter-spacing: 1px; text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+/* ── AUTOAVALIAÇÃO ── */
+.autoavaliacao {
+  display: none;
+  margin-top: 10px;
+  display: none;
+  gap: 8px;
+}
+.autoavaliacao.visivel { display: flex; }
+.btn-avaliacao {
+  padding: 8px 16px;
+  border: 2px solid var(--borda);
+  border-radius: 8px;
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: white;
+}
+.btn-avaliacao:hover { transform: translateY(-1px); }
+.btn-avaliacao.acertei { color: var(--verde); border-color: var(--verde); }
+.btn-avaliacao.acertei:hover { background: var(--verde-bg); }
+.btn-avaliacao.acertei.selecionado { background: var(--verde); color: white; }
+.btn-avaliacao.revisar { color: var(--amarelo); border-color: var(--amarelo); }
+.btn-avaliacao.revisar:hover { background: var(--amarelo-bg); }
+.btn-avaliacao.revisar.selecionado { background: var(--amarelo); color: white; }
+
+/* ── BOTÕES DO BLOCO ── */
+.bloco-acoes {
+  padding: 16px 20px;
+  border-top: 1px solid var(--borda);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.btn-conferir {
+  padding: 12px 28px;
+  border: none;
+  border-radius: 8px;
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-conferir.desabilitado { background: var(--cinza-bg); color: var(--cinza); cursor: not-allowed; }
+.btn-conferir.ativo { background: var(--azul); color: white; box-shadow: 0 4px 12px rgba(26,74,122,0.3); }
+.btn-conferir.ativo:hover { background: #133d66; transform: translateY(-1px); }
+
+.btn-proximo {
+  padding: 12px 28px;
+  border: none;
+  border-radius: 8px;
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: var(--verde);
+  color: white;
+  display: none;
+  box-shadow: 0 4px 12px rgba(26,122,58,0.3);
+}
+.btn-proximo:hover { background: #15652f; transform: translateY(-1px); }
+
+.aviso-preencher {
+  font-size: 12px;
+  color: var(--vermelho);
+  font-weight: 600;
+  display: none;
+}
+
+/* ── PEGADINHAS ── */
+.pegadinhas-card {
+  display: none;
+  background: var(--card);
+  border: 2px solid var(--vermelho);
+  border-radius: var(--raio);
+  overflow: hidden;
+  margin-top: 16px;
+  box-shadow: var(--sombra);
+}
+.pegadinhas-card.visivel { display: block; animation: surgir 0.4s ease; }
+.pegadinhas-header {
+  background: var(--vermelho);
+  color: white;
+  padding: 14px 20px;
+  font-family: 'Playfair Display', serif;
+  font-size: 16px;
+  font-weight: 700;
+  text-align: center;
+}
+.pegadinhas-body { padding: 20px; }
+.pegadinha-item {
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--texto2);
+}
+.pegadinha-item:last-child { border-bottom: none; }
+.pegadinha-item strong { color: var(--vermelho); }
+
+/* ── CONCLUSÃO ── */
+.conclusao {
+  display: none;
+  text-align: center;
+  padding: 40px 20px;
+  background: var(--card);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+  margin-top: 16px;
+  box-shadow: var(--sombra);
+}
+.conclusao.visivel { display: block; animation: surgir 0.4s ease; }
+.conclusao-emoji { font-size: 56px; margin-bottom: 12px; }
+.conclusao-titulo { font-family: 'Playfair Display',serif; font-size: 24px; font-weight: 900; margin-bottom: 8px; }
+.conclusao-msg { font-size: 14px; color: var(--texto2); line-height: 1.6; margin-bottom: 16px; }
+.conclusao-stats {
+  display: flex; justify-content: center; gap: 24px; flex-wrap: wrap;
+  margin-top: 16px;
+}
+.stat-box { text-align: center; }
+.stat-num { font-size: 32px; font-weight: 900; }
+.stat-num.verde { color: var(--verde); }
+.stat-num.amarelo { color: var(--amarelo); }
+.stat-label { font-size: 11px; color: var(--texto3); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+
+@media (max-width: 480px) {
+  .bloco-texto p { font-size: 13.5px; }
+  .pergunta-campo { min-height: 60px; font-size: 13px; }
+  .autoavaliacao { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>📖 Leitura Guiada Interativa</h1>
+  <p>Idade Média — Cap. 3, 4, 5 e pág. 98 do Cap. 6 • História 7º ano</p>
+</div>
+
+<div class="progress-container">
+  <div class="progress-info">
+    <span id="progTexto">Bloco 1 de 10</span>
+    <span id="progPct">0%</span>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="progFill"></div></div>
+  <div class="progress-blocos" id="progDots"></div>
+</div>
+
+<div class="content" id="conteudo"></div>
+
+<script>
+const BLOCOS = [
+  {
+    titulo: "Ruralização e o Surgimento do Feudo",
+    textos: [
+      "Durante a Alta Idade Média, após o declínio do Império Romano do Ocidente, as guerras e invasões eram constantes. Os reis enfrentaram diversos conflitos e guerras, e a Europa Ocidental não era vista como um local seguro.",
+      "As pessoas passaram a buscar abrigo e proteção em locais mais seguros, comandados por nobres proprietários de terras. Dessa forma, desenvolveu-se um processo chamado <strong>ruralização</strong>, que indica a mudança de pessoas das cidades para os campos, contribuindo para a criação de uma economia baseada na posse da terra com atividades agrícolas e pastoris.",
+      "Os nobres passaram a construir nas áreas rurais moradias reforçadas, geralmente feitas com grossas paredes de pedra: os <strong>castelos medievais</strong>. As pessoas começaram a se instalar nas aldeias próximas a essas fortificações, em terras que pertenciam aos senhores e eram chamadas de <strong>feudos</strong>.",
+      "O feudo era dividido em campos: <strong>Manso senhorial</strong> (reservado para o senhor — castelo, terras férteis, moinho, celeiro), <strong>Manso servil</strong> (lotes cedidos aos camponeses mediante tributos) e <strong>Manso comunal</strong> (área de uso comum — lenha, pastagem; a caça era permitida somente aos senhores)."
+    ],
+    perguntas: [
+      { texto: "O que foi o processo de ruralização e por que ele aconteceu?", modelo: "A ruralização foi a mudança das pessoas das cidades para os campos. Aconteceu porque as guerras e invasões bárbaras tornaram as cidades inseguras, levando as pessoas a buscar proteção nos feudos dos nobres." },
+      { texto: "Como o feudo era dividido? Cite as três partes.", modelo: "O feudo era dividido em: manso senhorial (castelo, terras férteis, moinho — tudo do senhor), manso servil (terras cedidas aos camponeses em troca de tributos) e manso comunal (área de uso comum para lenha e pastagem)." },
+      { texto: "Por que os camponeses aceitavam viver nos feudos mesmo com tantas obrigações?", modelo: "Porque precisavam de proteção. As guerras e invasões constantes tornavam a vida fora dos feudos perigosa. Em troca de segurança e moradia, aceitavam trabalhar e pagar tributos ao senhor feudal." }
+    ]
+  },
+  {
+    titulo: "Obrigações dos Servos e Produção Feudal",
+    textos: [
+      "As bases da economia feudal eram a agricultura e as trocas de produtos. A atividade comercial existia, mas era escassa. Os feudos eram <strong>autossuficientes</strong>: produziam praticamente tudo o que era necessário para a sobrevivência de seus habitantes.",
+      "Os camponeses tinham uma alimentação restrita: dieta à base de legumes e pães, produtos ricos em carboidratos. Como não tinham acesso a alimentos variados, ficavam mais fracos e desprotegidos diante das doenças. Em contrapartida, os nobres se alimentavam com muito mais fartura, consumindo carnes e vinhos.",
+      "Os servos, trabalhadores típicos do feudalismo, tinham diversas obrigações: <strong>Talha</strong> (destinar ao senhor parte do que era produzido), <strong>Corveia</strong> (realizar serviços gratuitos no campo e no castelo), <strong>Banalidades</strong> (pagar pelo uso dos moinhos, fornos e outros equipamentos do senhor) e o <strong>Dízimo</strong> (10% da produção para a Igreja).",
+      "A palavra 'servo' vem do latim 'servus', que significa 'escravo', mas não podemos confundir a condição do servo medieval com a do escravo romano. Os servos <strong>não podiam ser comprados ou vendidos</strong>, embora estivessem presos à terra e tivessem diversas obrigações."
+    ],
+    perguntas: [
+      { texto: "O que significa dizer que os feudos eram autossuficientes?", modelo: "Significa que produziam praticamente tudo o que precisavam para sobreviver, sem depender de comércio externo. Tinham terras para plantio, criação de animais, moinho para grãos, etc." },
+      { texto: "Cite e explique três obrigações dos servos.", modelo: "Talha: entregar parte da produção ao senhor. Corveia: trabalhar de graça nas terras do senhor em alguns dias da semana. Banalidades: pagar pelo uso de equipamentos como moinho e forno." },
+      { texto: "Qual a diferença entre um servo medieval e um escravo romano?", modelo: "O servo não podia ser comprado ou vendido — estava preso à terra, mas não era propriedade do senhor. Já o escravo romano era tratado como objeto/mercadoria e podia ser comercializado." }
+    ]
+  },
+  {
+    titulo: "Vassalagem, Suserania e Poder Descentralizado",
+    textos: [
+      "Em troca de auxílio militar para defender os seus territórios, os reis deram terras aos nobres guerreiros mais próximos, bem como autonomia para administrá-las. Esses nobres tinham o direito de cobrar impostos e de criar leis em suas terras sem a interferência real.",
+      "A doação de terras era feita por meio de uma cerimônia solene chamada <strong>cerimônia de vassalagem</strong> (ou comitato). O nobre jurava fidelidade ao rei, prometendo protegê-lo em guerras. Em troca, o cavaleiro recebia um feudo, tornando-se <strong>vassalo</strong> do rei, e este, por sua vez, passava a ser <strong>suserano</strong> do cavaleiro.",
+      "Os vassalos passaram a ter permissão para dividir as terras com outros nobres. Esses senhores continuavam sendo vassalos do rei, mas também eram suseranos de outros vassalos. Por causa disso, podemos afirmar que o feudalismo se caracterizou pela existência de um <strong>poder descentralizado</strong>.",
+      "Na Baixa Idade Média, o feudo passou a ser adquirido de maneira hereditária, trazendo mais poder à aristocracia rural, deixando o rei ainda mais isolado das decisões de seu antigo território."
+    ],
+    perguntas: [
+      { texto: "O que acontecia na cerimônia de vassalagem?", modelo: "O nobre jurava fidelidade ao rei e prometia serviço militar. Em troca, recebia terras (feudo) com autonomia para administrá-las. Quem dava a terra era o suserano; quem recebia era o vassalo." },
+      { texto: "Por que dizemos que no feudalismo o poder era descentralizado?", modelo: "Porque cada senhor feudal tinha autonomia dentro de seu feudo — podia cobrar impostos, criar leis. O rei existia, mas seu poder real era limitado, já que havia distribuído terras e autoridade aos nobres." },
+      { texto: "Explique a frase: 'O rei existia, mas era um rei fraco'.", modelo: "Ao distribuir terras aos nobres para ganhar aliados militares, o rei perdia autoridade sobre esses territórios. Os nobres tinham poder total em seus feudos. Assim, o rei existia como figura, mas seu poder político era fraco." }
+    ]
+  },
+  {
+    titulo: "Sociedade Estamental e o Poder da Igreja",
+    textos: [
+      "A sociedade feudal era <strong>estamental</strong>: o papel exercido ao longo da vida do indivíduo era definido com base no grupo no qual ele nascia, não sendo possível subir na hierarquia social. Nesse contexto, quase não existia mobilidade entre as camadas sociais, que recebiam o nome de <strong>estamento</strong>, ou <strong>ordem</strong>.",
+      "A sociedade era entendida em três partes, cada uma com sua função: os <strong>oratores</strong> (os que oram — clero), os <strong>bellatores</strong> (os que guerreiam — nobreza/cavaleiros) e os <strong>laboratores</strong> (os que trabalham — camponeses).",
+      "A primeira e mais importante divisão social se dava entre os <strong>clérigos</strong> (integrantes do clero da Igreja católica) e os <strong>leigos</strong>. Existiam também os <strong>hereges</strong> — indivíduos que não seguiam o catolicismo e podiam ser perseguidos. Para isso, foram criados tribunais religiosos chamados de <strong>Inquisição</strong> ou <strong>Tribunal do Santo Ofício</strong>.",
+      "O <strong>clero secular</strong> vivia em contato com a população (papa, bispos, padres). O <strong>clero regular</strong> vivia isolado em mosteiros ou conventos, seguindo uma regra religiosa. Os mosteiros foram os mais importantes centros de estudos medievais, onde os <strong>monges copistas</strong> preservaram obras da cultura antiga."
+    ],
+    perguntas: [
+      { texto: "O que significa dizer que a sociedade feudal era estamental?", modelo: "Significa que o lugar social de cada pessoa era definido pelo nascimento. Não havia mobilidade social — quem nascia camponês morria camponês. Diferente da sociedade de classes atual." },
+      { texto: "Quais eram as três ordens medievais e qual a função de cada uma?", modelo: "Oratores (os que oram = clero), Bellatores (os que guerreiam = nobreza/cavaleiros) e Laboratores (os que trabalham = camponeses/servos)." },
+      { texto: "Qual a diferença entre clero secular e clero regular?", modelo: "O clero secular vivia em contato com o povo, nas paróquias (papa, bispos, padres). O clero regular vivia isolado em mosteiros ou conventos, seguindo regras rígidas. 'Regular' vem de 'regula' (regra)." }
+    ]
+  },
+  {
+    titulo: "Cultura Medieval — Teocentrismo, Arte e Conhecimento",
+    textos: [
+      "A cultura do mundo medieval europeu era <strong>teocêntrica</strong>, ou seja, girava em torno de Deus e da religião católica. A Igreja era responsável por possibilitar certa uniformidade à cultura medieval, disseminando as ideias que estivessem de acordo com o pensamento cristão.",
+      "O historiador Hilário Franco Júnior propõe analisar a cultura medieval em três aspectos: <strong>Cultura eclesiástica</strong> (referente à Igreja, elitista e conservadora), <strong>Cultura popular</strong> (oposta à cultura da elite, carregava traços do paganismo e da liberdade — exemplo: o Carnaval) e <strong>Cultura intermediária</strong> (mistura das duas, como a história de São Jorge matando o dragão).",
+      "A arquitetura medieval tinha dois estilos predominantes: o <strong>românico</strong> (paredes muito grossas, janelas estreitas, arcos — impressão de fortalezas, estrutura mais horizontal) e o <strong>gótico</strong> (muitas janelas decoradas, vitrais coloridos, cenas religiosas, estrutura vertical com torres elevadas — transmitia espiritualidade).",
+      "Os livros medievais eram copiados à mão pelos <strong>monges copistas</strong> e decorados com desenhos chamados <strong>iluminuras</strong>, usando folhas de ouro ou de prata. As <strong>universidades</strong> medievais (Oxford, Cambridge, Paris, Salamanca, Coimbra, Bolonha) tiveram papel importante na produção de conhecimento."
+    ],
+    perguntas: [
+      { texto: "O que era o teocentrismo e como ele influenciava a cultura medieval?", modelo: "Teocentrismo = Deus no centro de tudo. A Igreja controlava o conhecimento, a arte, a política e o comportamento. Quase toda a produção cultural estava ligada à religião católica." },
+      { texto: "Qual a diferença entre o estilo românico e o estilo gótico?", modelo: "Românico: paredes grossas, janelas estreitas, aspecto de fortaleza, estrutura horizontal. Gótico: vitrais coloridos, torres altas, estrutura vertical, transmitia espiritualidade. Ex de gótico: Notre-Dame de Paris." },
+      { texto: "O que eram as iluminuras?", modelo: "Eram desenhos detalhados feitos à mão em livros medievais pelos monges copistas, decorados com folhas de ouro ou prata. O nome vem de 'iluminar' — dar brilho e beleza aos manuscritos." }
+    ]
+  },
+  {
+    titulo: "Cruzadas — Causas e Motivações",
+    textos: [
+      "Jerusalém é considerada terra santa para <strong>judeus, muçulmanos e cristãos</strong>. As disputas pelo território vêm ocorrendo desde o século VII. Em 1076, os <strong>turcos seljúcidas</strong> conseguiram tomar a cidade, expandindo seus domínios. Além disso, durante grande parte da Idade Média, eles controlaram o Mar Mediterrâneo, impedindo sua utilização como rota comercial pelos europeus.",
+      "Para reconquistar Jerusalém e impedir a expansão muçulmana, os cristãos decidiram organizar expedições militares. Essas expedições, conhecidas como guerra santa ou peregrinação, aconteceram entre os <strong>séculos XI e XIII</strong> e passaram a ser chamadas de <strong>Cruzadas</strong>. O nome está relacionado às inscrições de cruzes nas roupas dos guerreiros.",
+      "A primeira Cruzada foi convocada em <strong>1095</strong> durante o <strong>Concílio de Clermont</strong>, na França, pelo papa <strong>Urbano II</strong>. Ele incentivou os cristãos a lutar pela libertação dos lugares sagrados e prometeu o <strong>perdão dos pecados</strong> a todos aqueles que participassem das expedições.",
+      "Além das motivações religiosas, as Cruzadas também aconteceram devido a fatores <strong>econômicos</strong>: apenas o primogênito herdava as terras (os demais ficavam sem posses), muitas pessoas buscavam oportunidades, e os comerciantes italianos de Gênova e Veneza queriam abrir rotas para o Oriente."
+    ],
+    perguntas: [
+      { texto: "Por que Jerusalém é considerada sagrada para três religiões?", modelo: "Para o judaísmo (capital do reino judaico, Templo de Salomão), para o cristianismo (local da crucificação e ressurreição de Jesus) e para o islamismo (local de onde Maomé ascendeu aos céus)." },
+      { texto: "Quais eram as motivações religiosas e econômicas das Cruzadas?", modelo: "Religiosas: reconquistar Jerusalém dos turcos, perdão dos pecados (indulgência), fortalecer o Papa. Econômicas: nobres sem herança buscando terras, comerciantes italianos querendo rotas para o Oriente, riquezas do mundo muçulmano." },
+      { texto: "Quem convocou a primeira Cruzada e quando?", modelo: "O Papa Urbano II convocou a primeira Cruzada em 1095, no Concílio de Clermont, na França. Prometeu perdão dos pecados a todos que participassem." }
+    ]
+  },
+  {
+    titulo: "Cruzadas — Templários e Consequências",
+    textos: [
+      "Para proteger os peregrinos foi criada uma organização religiosa chamada <strong>Ordem dos Cavaleiros Templários</strong>. Seus membros eram monges guerreiros que faziam votos de pobreza e de castidade.",
+      "Com o tempo, os Templários passaram a ter importância na Europa, ganhando poder político e econômico: os integrantes que não tinham função militar cuidavam dos tesouros da ordem. Por isso, estudiosos consideram que essa organização, que se tornou financeira, deu <strong>origem ao sistema bancário</strong>.",
+      "Do ponto de vista religioso, os cristãos tiveram sucesso na primeira Cruzada, já que conseguiram reconquistar Jerusalém. Na terceira Cruzada — também conhecida como <strong>Cruzada dos Reis</strong> — os cristãos conquistaram o acesso aos lugares sagrados.",
+      "As Cruzadas trouxeram consequências econômicas e sociais importantes: o <strong>Mar Mediterrâneo foi reaberto para a navegação</strong>, contribuindo para a expansão comercial e para as <strong>trocas culturais</strong> entre o Oriente e o Ocidente. Os europeus aprenderam com os árabes sobre <strong>Medicina, navegação, Astronomia, Matemática e Arquitetura</strong>. Porém, todo o processo foi bastante violento, com muitas mortes."
+    ],
+    perguntas: [
+      { texto: "Por que os Templários são considerados os criadores do sistema bancário?", modelo: "Porque acumularam riqueza guardando tesouros e fazendo empréstimos a juros — funcionavam como banqueiros. O rei Filipe IV da França os perseguiu para não pagar suas dívidas." },
+      { texto: "Quais foram os principais efeitos das Cruzadas?", modelo: "Positivos: reabertura do Mediterrâneo ao comércio, trocas culturais com o Oriente (Medicina, Matemática, Navegação). Negativos: muitas mortes, senhores feudais enfraquecidos, aceleração do declínio do feudalismo." },
+      { texto: "Qual a relação entre as Cruzadas e o comércio europeu?", modelo: "As Cruzadas reabriram o Mar Mediterrâneo à navegação, que estava controlado pelos muçulmanos. Isso permitiu a retomada do comércio europeu com o Oriente e impulsionou o Renascimento comercial." }
+    ]
+  },
+  {
+    titulo: "Renascimento Comercial — Feiras e Rotas",
+    textos: [
+      "Com o fim das invasões bárbaras, estabeleceu-se um período de tranquilidade, em que houve o desenvolvimento de novas técnicas de produção, como o arado de tração animal, o plantio em <strong>rotação trienal</strong> e o aprimoramento dos moinhos. Com isso, a oferta de alimentos aumentou enormemente.",
+      "A diminuição das guerras também ocasionou um importante <strong>crescimento demográfico</strong> na Europa Ocidental: a população praticamente dobrou entre os anos 1000 e 1300. O excesso de mão de obra no campo fez com que camponeses buscassem novas atividades econômicas, tornando-se artesãos e mercadores.",
+      "Nas rotas de comércio, surgiram também mercados temporários — as <strong>feiras</strong> — realizadas uma ou duas vezes ao ano. As mais famosas eram as da região de <strong>Champagne</strong>, na França. Como os mercadores vinham de várias regiões, circulavam moedas diferentes, sendo essencial a figura do <strong>cambista</strong> (que fazia a troca de moedas).",
+      "Produtos caros e luxuosos como seda, especiarias e perfumes eram comercializados em cidades importantes como <strong>Gênova e Veneza</strong>, na Península Itálica — pontos de contato comercial com o Oriente. Esse processo todo foi chamado de <strong>Renascimento comercial</strong>."
+    ],
+    perguntas: [
+      { texto: "Que fatores impulsionaram o Renascimento comercial?", modelo: "O fim das invasões (mais segurança), melhoria das técnicas agrícolas (charrua, moinhos, rotação trienal), aumento da produção de alimentos e crescimento populacional. Também a reabertura do Mediterrâneo pelas Cruzadas." },
+      { texto: "O que eram as feiras medievais e por que os cambistas eram importantes?", modelo: "Eram mercados temporários realizados 1-2 vezes ao ano, reunindo comerciantes de várias regiões. Os cambistas eram essenciais porque cada região tinha sua própria moeda e era preciso fazer a troca (câmbio)." },
+      { texto: "O que é rotação trienal?", modelo: "Técnica agrícola em que a terra era dividida em 3 partes: duas recebiam culturas diferentes e uma ficava em descanso. A cada ano, alternava-se. Isso melhorou a produtividade do solo." }
+    ]
+  },
+  {
+    titulo: "Renascimento Urbano — Burgos e Burguesia",
+    textos: [
+      "Com o crescimento das atividades comerciais, as cidades também ganharam mais dinamismo. A partir do século XI, as cidades começaram a crescer em tamanho e importância econômica, por conta do maior fluxo de mercadores e produtos.",
+      "Surgiram novos conjuntos de habitações, muitas vezes no entorno das feiras ou dos castelos. Esses novos agrupamentos urbanos ficaram conhecidos como <strong>burgos</strong> — onde se desenvolviam o comércio, o artesanato, a <strong>manufatura</strong> e os bancos. Os habitantes desses locais eram chamados de <strong>burgueses</strong>.",
+      "Nas cidades, os artesãos trabalhavam de maneira organizada e hierarquizada, nas chamadas <strong>corporações de ofício</strong>. Essas corporações uniam os trabalhadores de determinado ofício (carpinteiros, pedreiros, sapateiros) e estabeleciam regras para controle dos preços, qualidade e abastecimento. Havia mestres de ofício, companheiros e aprendizes (crianças de 12 a 16 anos).",
+      "A <strong>Liga Hanseática</strong> foi uma liga de cidades mercantis alemãs que detinha o domínio comercial do norte europeu, abrangendo a região de Londres até Novgorod (Rússia). Os banqueiros enriqueciam com empréstimos a juros — a chamada <strong>usura</strong>, prática duramente criticada pela Igreja católica."
+    ],
+    perguntas: [
+      { texto: "O que eram os burgos e quem eram os burgueses?", modelo: "Burgos eram novos centros urbanos surgidos na Baixa Idade Média, dedicados ao comércio, artesanato, manufatura e bancos. Burgueses eram seus moradores — uma nova classe social ligada ao comércio." },
+      { texto: "Para que serviam as corporações de ofício?", modelo: "Reuniam artesãos do mesmo ofício (carpinteiros, sapateiros, etc.) para regular preços, qualidade dos produtos e formar aprendizes. Tinham mestres, companheiros e aprendizes (jovens de 12 a 16 anos)." },
+      { texto: "O que era a usura e por que a Igreja a condenava?", modelo: "Usura era a prática de cobrar juros sobre empréstimos de dinheiro. A Igreja condenava porque considerava imoral enriquecer sem esforço do trabalho. Mas os banqueiros dos burgos praticavam e ficavam ricos." }
+    ]
+  },
+  {
+    titulo: "A Crise do Século XIV e a Peste Negra",
+    textos: [
+      "Entre os séculos XI e XIII, houve intenso crescimento populacional e expansão do comércio. Entretanto, no século XIV, aconteceu uma queda de produção que gerou fome: o <strong>desmatamento excessivo</strong> empobreceu os solos, e <strong>mudanças climáticas</strong> (chuvas irregulares) afetaram as colheitas. Com uma população maior e uma oferta de alimentos menor, o povo começou a sofrer com a fome.",
+      "Já enfraquecida pela falta de alimentos, a população europeia assistiu ao aparecimento de uma grave doença: a <strong>peste bubônica</strong>, conhecida como <strong>Peste Negra</strong>. A doença chegou à Europa por volta de <strong>1346-1348</strong>, com ratos em navios vindos do Oriente.",
+      "A peste bubônica é uma doença causada pela bactéria <strong>Yersinia pestis</strong> e transmitida pela picada da <strong>pulga de rato</strong>. Essa bactéria causa febre, surgimento de <strong>ínguas</strong> — principalmente no pescoço e nas axilas —, vertigem, vômitos e dor de cabeça.",
+      "O maior contato entre diferentes regiões facilitou que a peste se alastrasse, seguindo as rotas de comércio do Mediterrâneo. A falta de higiene e de saneamento básico, o acúmulo de lixo e de cadáveres fazia com que os ratos infectados proliferassem ainda mais. Os efeitos foram avassaladores: <strong>cerca de 1/3 da população europeia morreu</strong>, ocasionando uma grave <strong>crise demográfica</strong>."
+    ],
+    perguntas: [
+      { texto: "O que causou a crise do século XIV antes da chegada da Peste?", modelo: "Desmatamento excessivo empobreceu os solos, mudanças climáticas prejudicaram as colheitas, a produção caiu e veio fome generalizada. A população ficou enfraquecida e vulnerável a doenças." },
+      { texto: "O que era a Peste Negra, como era transmitida e quais seus sintomas?", modelo: "Era uma doença causada pela bactéria Yersinia pestis, transmitida por pulgas de ratos. Chegou à Europa por navios comerciais do Oriente (1346-1348). Sintomas: febre, ínguas no pescoço e axilas, vertigem, vômitos." },
+      { texto: "O que é uma crise demográfica e por que a Peste causou uma?", modelo: "Crise demográfica é uma grande diminuição da população, causada por epidemias, guerras ou catástrofes. A Peste Negra matou cerca de 1/3 da população europeia, causando uma crise demográfica gravíssima." },
+      { texto: "Por que a Peste se espalhou tão rápido pela Europa?", modelo: "Porque as redes de comércio interligavam as cidades (a doença seguiu as rotas do Mediterrâneo), a falta de higiene e saneamento facilitava a proliferação de ratos, e não havia conhecimento médico para tratar a doença." }
+    ]
+  }
+];
+
+const PEGADINHAS = [
+  "<strong>Servo ≠ Escravo:</strong> O servo medieval não podia ser comprado ou vendido. Estava preso à terra, mas não era propriedade do senhor.",
+  "<strong>Sociedade estamental ≠ sociedade de classes:</strong> Na estamental, o nascimento definia tudo. Na de classes (hoje), teoricamente há mobilidade social.",
+  "<strong>O rei existia, mas era fraco:</strong> Ao distribuir terras, perdia autoridade. Poder descentralizado!",
+  "<strong>Cruzadas NÃO tinham apenas motivação religiosa:</strong> Havia fortes interesses econômicos — terras, comércio, riquezas.",
+  "<strong>Burguês medieval ≠ burguês atual:</strong> Na Idade Média, era simplesmente quem morava nos burgos e vivia do comércio.",
+  "<strong>Peste Negra ≠ castigo divino:</strong> Era causada pela bactéria Yersinia pestis, transmitida por pulgas de ratos. Na prova, a causa é científica!",
+  "<strong>Românico ≠ Gótico:</strong> Românico = pesado, horizontal, fortaleza. Gótico = leve, vertical, vitrais, torres altas.",
+  "<strong>Templários = origem do sistema bancário:</strong> Guardavam tesouros e faziam empréstimos a juros."
+];
+
+const TOTAL = BLOCOS.length;
+let blocoAtual = 0;
+let blocosCompletos = new Array(TOTAL).fill(false);
+let avaliacoes = []; // {bloco, pergunta, resultado}
+let respostasSalvas = {}; // { "0_0": "texto digitado", ... }
+
+function init() {
+  // Dots de progresso
+  const dots = document.getElementById('progDots');
+  for (let i = 0; i < TOTAL; i++) {
+    const dot = document.createElement('div');
+    dot.className = `progress-dot ${i === 0 ? 'atual' : 'bloqueado'}`;
+    dot.id = `dot${i}`;
+    dot.textContent = i + 1;
+    dot.onclick = () => irParaBloco(i);
+    dots.appendChild(dot);
+  }
+  // Dot pegadinhas
+  const dotP = document.createElement('div');
+  dotP.className = 'progress-dot bloqueado';
+  dotP.id = 'dotP';
+  dotP.textContent = '⚠';
+  dotP.style.fontSize = '12px';
+  dots.appendChild(dotP);
+
+  renderizarBloco(0);
+}
+
+function renderizarBloco(idx) {
+  const area = document.getElementById('conteudo');
+  area.innerHTML = '';
+  const b = BLOCOS[idx];
+  const numPerguntas = b.perguntas.length;
+
+  let html = `<div class="bloco visivel" id="bloco${idx}">
+    <div class="bloco-header">
+      <div class="bloco-num">${idx+1}</div>
+      <div class="bloco-titulo">${b.titulo}</div>
+    </div>
+    <div class="bloco-texto">
+      <div class="bloco-texto-label">📖 Texto do Capítulo</div>
+      ${b.textos.map(t => `<p>${t}</p>`).join('')}
+    </div>
+    <div class="bloco-perguntas">
+      <div class="bloco-perguntas-label">✏️ Responda</div>
+      ${b.perguntas.map((p, pi) => `
+        <div class="pergunta" id="perg${idx}_${pi}">
+          <div class="pergunta-texto">${pi+1}. ${p.texto}</div>
+          <textarea class="pergunta-campo" id="campo${idx}_${pi}" 
+            placeholder="Escreva sua resposta aqui..."
+            oninput="verificarCampos(${idx})"
+            ${blocosCompletos[idx] ? 'disabled' : ''}></textarea>
+          <div class="resposta-modelo" id="modelo${idx}_${pi}">
+            <div class="resposta-modelo-label">📋 Resposta Modelo</div>
+            ${p.modelo}
+          </div>
+          <div class="autoavaliacao" id="avaliacao${idx}_${pi}">
+            <button class="btn-avaliacao acertei" onclick="avaliar(${idx},${pi},'acertei')">✅ Acertei</button>
+            <button class="btn-avaliacao revisar" onclick="avaliar(${idx},${pi},'revisar')">📝 Preciso revisar</button>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+    <div class="bloco-acoes" id="acoes${idx}">
+      <span class="aviso-preencher" id="aviso${idx}">Preencha todas as respostas antes de conferir</span>
+      <button class="btn-conferir desabilitado" id="btnConferir${idx}" onclick="conferir(${idx})">
+        Conferir Minhas Respostas
+      </button>
+      <button class="btn-proximo" id="btnProximo${idx}" onclick="proximoBloco(${idx})">
+        ${idx < TOTAL - 1 ? 'Próximo Bloco →' : 'Ver Pegadinhas →'}
+      </button>
+    </div>
+  </div>`;
+  area.innerHTML = html;
+  
+  // RESTAURAR respostas salvas se o bloco já foi completado
+  if (blocosCompletos[idx]) {
+    const b2 = BLOCOS[idx];
+    for (let pi = 0; pi < b2.perguntas.length; pi++) {
+      const campo = document.getElementById(`campo${idx}_${pi}`);
+      const chave = `${idx}_${pi}`;
+      if (respostasSalvas[chave]) {
+        campo.value = respostasSalvas[chave];
+        campo.classList.add('preenchida');
+        campo.disabled = true;
+      }
+      // Mostrar resposta modelo
+      document.getElementById(`modelo${idx}_${pi}`).style.display = 'block';
+      // Mostrar autoavaliação e restaurar seleção
+      const avalContainer = document.getElementById(`avaliacao${idx}_${pi}`);
+      avalContainer.classList.add('visivel');
+      const avalSalva = avaliacoes.find(a => a.bloco === idx && a.pergunta === pi);
+      if (avalSalva) {
+        if (avalSalva.resultado === 'acertei') {
+          avalContainer.querySelector('.acertei').classList.add('selecionado');
+        } else {
+          avalContainer.querySelector('.revisar').classList.add('selecionado');
+        }
+      }
+    }
+    // Esconder botão conferir, mostrar próximo como "já concluído"
+    document.getElementById(`btnConferir${idx}`).style.display = 'none';
+    const btnProx = document.getElementById(`btnProximo${idx}`);
+    btnProx.style.display = 'block';
+    btnProx.textContent = idx < TOTAL - 1 ? 'Próximo Bloco →' : 'Ver Pegadinhas →';
+  }
+
+  atualizarProgresso();
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+function verificarCampos(idx) {
+  const b = BLOCOS[idx];
+  let todosPreenchidos = true;
+  for (let pi = 0; pi < b.perguntas.length; pi++) {
+    const campo = document.getElementById(`campo${idx}_${pi}`);
+    if (campo.value.trim().length < 3) {
+      todosPreenchidos = false;
+      campo.classList.remove('preenchida');
+    } else {
+      campo.classList.add('preenchida');
+    }
+  }
+  const btn = document.getElementById(`btnConferir${idx}`);
+  if (todosPreenchidos) {
+    btn.classList.remove('desabilitado');
+    btn.classList.add('ativo');
+  } else {
+    btn.classList.add('desabilitado');
+    btn.classList.remove('ativo');
+  }
+}
+
+function conferir(idx) {
+  const b = BLOCOS[idx];
+  // Verificar se tudo preenchido
+  for (let pi = 0; pi < b.perguntas.length; pi++) {
+    const campo = document.getElementById(`campo${idx}_${pi}`);
+    if (campo.value.trim().length < 3) {
+      document.getElementById(`aviso${idx}`).style.display = 'block';
+      return;
+    }
+  }
+  document.getElementById(`aviso${idx}`).style.display = 'none';
+
+  // SALVAR respostas digitadas
+  for (let pi = 0; pi < b.perguntas.length; pi++) {
+    const campo = document.getElementById(`campo${idx}_${pi}`);
+    respostasSalvas[`${idx}_${pi}`] = campo.value;
+  }
+
+  // Mostrar modelos e autoavaliação
+  for (let pi = 0; pi < b.perguntas.length; pi++) {
+    document.getElementById(`modelo${idx}_${pi}`).style.display = 'block';
+    document.getElementById(`avaliacao${idx}_${pi}`).classList.add('visivel');
+    document.getElementById(`campo${idx}_${pi}`).disabled = true;
+  }
+  // Esconder botão conferir
+  document.getElementById(`btnConferir${idx}`).style.display = 'none';
+}
+
+function avaliar(idx, pi, resultado) {
+  // Marcar botão selecionado
+  const container = document.getElementById(`avaliacao${idx}_${pi}`);
+  container.querySelectorAll('.btn-avaliacao').forEach(b => b.classList.remove('selecionado'));
+  if (resultado === 'acertei') {
+    container.querySelector('.acertei').classList.add('selecionado');
+  } else {
+    container.querySelector('.revisar').classList.add('selecionado');
+  }
+
+  // Salvar avaliação
+  const existente = avaliacoes.findIndex(a => a.bloco === idx && a.pergunta === pi);
+  if (existente >= 0) {
+    avaliacoes[existente].resultado = resultado;
+  } else {
+    avaliacoes.push({bloco: idx, pergunta: pi, resultado});
+  }
+
+  // Verificar se todas as perguntas do bloco foram avaliadas
+  const b = BLOCOS[idx];
+  const avaliadasNoBloco = avaliacoes.filter(a => a.bloco === idx).length;
+  if (avaliadasNoBloco === b.perguntas.length) {
+    document.getElementById(`btnProximo${idx}`).style.display = 'block';
+  }
+}
+
+function proximoBloco(idx) {
+  blocosCompletos[idx] = true;
+  const dot = document.getElementById(`dot${idx}`);
+  dot.classList.remove('atual');
+  dot.classList.add('completo');
+
+  if (idx < TOTAL - 1) {
+    blocoAtual = idx + 1;
+    const nextDot = document.getElementById(`dot${blocoAtual}`);
+    nextDot.classList.remove('bloqueado');
+    nextDot.classList.add('atual');
+    renderizarBloco(blocoAtual);
+  } else {
+    // Mostrar pegadinhas e conclusão
+    const dotP = document.getElementById('dotP');
+    dotP.classList.remove('bloqueado');
+    dotP.classList.add('completo');
+    mostrarFinal();
+  }
+  atualizarProgresso();
+}
+
+function irParaBloco(idx) {
+  if (idx > blocoAtual && !blocosCompletos[idx]) return; // bloqueado
+  if (blocosCompletos[idx]) {
+    // Já completo — permitir revisitar
+    renderizarBloco(idx);
+  } else if (idx === blocoAtual) {
+    renderizarBloco(idx);
+  }
+}
+
+function atualizarProgresso() {
+  const completos = blocosCompletos.filter(b => b).length;
+  const pct = Math.round((completos / TOTAL) * 100);
+  document.getElementById('progTexto').textContent = completos === TOTAL
+    ? '✅ Leitura Guiada Completa!'
+    : `Bloco ${blocoAtual + 1} de ${TOTAL}`;
+  document.getElementById('progPct').textContent = `${pct}%`;
+  document.getElementById('progFill').style.width = `${pct}%`;
+}
+
+function mostrarFinal() {
+  const area = document.getElementById('conteudo');
+  const acertos = avaliacoes.filter(a => a.resultado === 'acertei').length;
+  const revisoes = avaliacoes.filter(a => a.resultado === 'revisar').length;
+
+  let html = `<div class="pegadinhas-card visivel">
+    <div class="pegadinhas-header">⚠️ Pegadinhas Mais Comuns</div>
+    <div class="pegadinhas-body">
+      ${PEGADINHAS.map(p => `<div class="pegadinha-item">${p}</div>`).join('')}
+    </div>
+  </div>
+  <div class="conclusao visivel">
+    <div class="conclusao-emoji">🎉</div>
+    <div class="conclusao-titulo">Leitura Guiada Completa!</div>
+    <div class="conclusao-msg">Você completou todos os ${TOTAL} blocos da leitura guiada. Veja seu resumo de autoavaliação:</div>
+    <div class="conclusao-stats">
+      <div class="stat-box">
+        <div class="stat-num verde">${acertos}</div>
+        <div class="stat-label">Acertei</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num amarelo">${revisoes}</div>
+        <div class="stat-label">Preciso revisar</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num" style="color:var(--azul)">${TOTAL}</div>
+        <div class="stat-label">Blocos completos</div>
+      </div>
+    </div>
+  </div>`;
+  area.innerHTML = html;
+  document.getElementById('progTexto').textContent = '✅ Leitura Guiada Completa!';
+  document.getElementById('progPct').textContent = '100%';
+  document.getElementById('progFill').style.width = '100%';
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+init();
+</script>
+</body>
+</html>
