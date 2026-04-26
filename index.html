@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kit Estudos</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Caveat:wght@600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f5f0e8;font-family:'Nunito',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 16px}
+.card{max-width:420px;width:100%;background:white;border-radius:20px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.12)}
+.topo{background:linear-gradient(135deg,#1a3a2a,#2a5e44);padding:24px 20px;text-align:center;color:white;position:relative}
+.topo::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#f9a825,#f57f17,#f9a825)}
+.topo h1{font-size:22px;font-weight:900;margin-bottom:4px}
+.topo p{font-size:12px;opacity:0.7}
+.corpo{padding:16px}
+a.item{display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:14px;margin-bottom:10px;text-decoration:none;transition:all 0.2s;border:2px solid transparent}
+a.item:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(0,0,0,0.08)}
+.i-resumo{background:#e8f4fd}
+.i-leitura{background:#e8f5ec}
+.i-quiz{background:#f3f0fd}
+.i-simulado{background:#fef2f2}
+.ic{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.i-resumo .ic{background:#1a4a7a}
+.i-leitura .ic{background:#1a3a2a}
+.i-quiz .ic{background:#6d28d9}
+.i-simulado .ic{background:#b91c1c}
+.info h3{font-size:15px;font-weight:900;color:#1a1a1a;margin-bottom:2px}
+.info p{font-size:11.5px;color:#5a4e3c;line-height:1.4}
+.rodape{padding:12px 16px;text-align:center;font-family:'Caveat',cursive;font-size:14px;color:#8a7e6e;border-top:1px solid #e8dfc8}
+</style>
+</head>
+<body>
+<div class="card">
+<div class="topo">
+<h1>📚 Kit Estudos</h1>
+<p>Idade Média — Cap. 3, 4, 5 e pág. 98 do Cap. 6</p>
+</div>
+<div class="corpo">
+<a href="historia_cap3_4_5_jornal.html" class="item i-resumo">
+<div class="ic">🗞️</div>
+<div class="info"><h3>Resumo Interativo</h3><p>Cards de conteúdo, dicas de prova e glossário</p></div>
+</a>
+<a href="historia_leitura_guiada_interativa.html" class="item i-leitura">
+<div class="ic">📖</div>
+<div class="info"><h3>Leitura Guiada</h3><p>Leia, responda e confira com resposta modelo</p></div>
+</a>
+<a href="historia_quiz_interativo.html" class="item i-quiz">
+<div class="ic">📝</div>
+<div class="info"><h3>Quiz</h3><p>15 questões — código de liberação para o gabarito</p></div>
+</a>
+<a href="historia_simulado_interativo.html" class="item i-simulado">
+<div class="ic">📋</div>
+<div class="info"><h3>Simulado</h3><p>25 questões como se fosse a prova de verdade</p></div>
+</a>
+</div>
+<div class="rodape">Feito com carinho por uma mãe, para mães 💚</div>
+</div>
+</body>
+</html>
